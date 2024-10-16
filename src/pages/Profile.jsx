@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
+import { ref, get, set, update } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
+import { parseUsernames } from "../utils";
 
 const Profile = () => {
   let connections = useUserConnections();
@@ -8,40 +10,50 @@ const Profile = () => {
   const [user, setUser] = useState(null);
 
   const createConnection = async (username) => {
-    const connectionsRef = db.ref("connections");
+    const connectionsRef = ref("connections");
     const newConnectionRef = connectionsRef.push();
 
     const isConnected = user?.connections?.[username];
 
     if (!isConnected) {
-      await newConnectionRef.set({
+      await set(newConnectionRef, {
         user1: user.username,
         user2: username,
         timestamp: Date.now(),
       });
 
-      const userConnectionsRef = db.ref(`users/${user.username}/connections`);
-      await userConnectionsRef.update({
+      const userConnectionsRef = ref(
+        db,
+        `users/${parseUsernames(user.username)}/connections`
+      );
+
+      await update(userConnectionsRef, {
         [username]: true,
       });
 
-      const otherUserConnectionsRef = db.ref(`users/${username}/connections`);
-      await otherUserConnectionsRef.update({
+      const otherUserConnectionsRef = ref(
+        db,
+        `users/${parseUsernames(username)}/connections`
+      );
+      await update(otherUserConnectionsRef, {
         [user.username]: true,
       });
     }
   };
 
   const fetchUserInfo = async (username) => {
-    const userRef = db.ref(`users/${username}`);
-    const userSnapshot = await userRef.get();
+    const parsedUsername = username.replace(".", "-");
+    const userRef = ref(db, `users/${parsedUsername}`);
+    const userSnapshot = await get(userRef);
     const userData = userSnapshot.val();
     setUser(userData);
   };
 
   useEffect(() => {
-    fetchUserInfo();
-  }, [connections]);
+    fetchUserInfo("be_kindplss");
+  }, []);
+
+  console.log("user", user);
 
   return <div>Profile</div>;
 };

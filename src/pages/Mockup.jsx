@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { ref, set, push, get } from "firebase/database";
+import { ref, set, push, get, update } from "firebase/database";
 import { db } from "../firebase";
+import { parseUsernames } from "../utils";
 
 const users = [
   {
@@ -87,29 +88,26 @@ function Mockup() {
   const [count, setCount] = useState(0);
 
   // Function to add users to Firebase
-  const addUsersToDatabase = () => {
-    users.forEach((user) => {
+  const addUsersToDatabase = async () => {
+    for (const user of users) {
+      const parsedUsername = user.username.replace(".", "-");
       // Create a reference for the "users" collection
-      const usersRef = ref(db, "users");
+      const usersRef = ref(db, `users/${parsedUsername}`);
 
-      // Push new user data with an auto-generated ID
-      const newUserRef = push(usersRef);
-
-      // Add user data (displayName, avatarUrl, connections, lastActive)
-      set(newUserRef, {
-        userId: user.userId,
-        displayName: user.displayName,
-        avatarUrl: user.avatarUrl,
-        connections: {}, // Initially empty connections
-        lastActive: Date.now(), // Unix timestamp for last active time
-      })
-        .then(() => {
-          console.log(`User ${user.username} added successfully.`);
-        })
-        .catch((error) => {
-          console.error("Error adding user: ", error);
+      try {
+        // Add user data (displayName, avatarUrl, connections, lastActive)
+        await set(usersRef, {
+          userId: user.userId,
+          displayName: user.displayName,
+          avatarUrl: user.avatarUrl,
+          connections: {}, // Initially empty connections
+          lastActive: Date.now(), // Unix timestamp for last active time
         });
-    });
+        console.log(`User ${user.username} added successfully.`);
+      } catch (error) {
+        console.error("Error adding user: ", error);
+      }
+    }
   };
 
   // Function to add random mock connections to Firebase
@@ -120,7 +118,7 @@ function Mockup() {
 
       // Retrieve all existing connections
       const connectionsSnapshot = await get(connectionsRef);
-      const existingConnections = connectionsSnapshot.val();
+      const existingConnections = connectionsSnapshot.val() || {};
 
       // Function to check if a connection already exists
       const connectionExists = (user1, user2) => {
@@ -146,19 +144,32 @@ function Mockup() {
         const newConnectionRef = push(connectionsRef);
 
         // Add the new connection to Firebase with a timestamp
-        set(newConnectionRef, {
+        await set(newConnectionRef, {
           user1: randomUser1,
           user2: randomUser2,
           timestamp: Date.now(), // Unix timestamp of when the connection was made
-        })
-          .then(() => {
-            console.log(
-              `New connection added between ${randomUser1} and ${randomUser2}`
-            );
-          })
-          .catch((error) => {
-            console.error("Error adding new connection: ", error);
-          });
+        });
+
+        const userConnectionsRef = ref(
+          db,
+          `users/${parseUsernames(randomUser1)}/connections`
+        );
+
+        await update(userConnectionsRef, {
+          [randomUser2]: true,
+        });
+
+        const otherUserConnectionsRef = ref(
+          db,
+          `users/${parseUsernames(randomUser2)}/connections`
+        );
+        await update(otherUserConnectionsRef, {
+          [randomUser1]: true,
+        });
+
+        console.log(
+          `New connection added between ${randomUser1} and ${randomUser2}`
+        );
       } else {
         console.log(
           `Connection between ${randomUser1} and ${randomUser2} already exists.`
