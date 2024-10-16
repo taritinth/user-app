@@ -4,13 +4,14 @@ import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCjXVFc6h-s1UJ5DyUxlmnF3moIG9K6aAc",
+  authDomain: "thainads-speed-dating.firebaseapp.com",
+  databaseURL:
+    "https://thainads-speed-dating-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "thainads-speed-dating",
+  storageBucket: "thainads-speed-dating.appspot.com",
+  messagingSenderId: "753163570473",
+  appId: "1:753163570473:web:132c525e1875d70f3a7b38",
 };
 
 const app = initializeApp(firebaseConfig);
