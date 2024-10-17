@@ -4,6 +4,8 @@ import { ref, get, set, update } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
 import { encodeUsername } from "../utils";
 
+import { Scanner } from "@yudiel/react-qr-scanner";
+
 const Profile = () => {
   let connections = useUserConnections();
 
@@ -55,7 +57,12 @@ const Profile = () => {
 
   console.log("user", user);
 
-  return <div>Profile</div>;
+  return (
+    <div>
+      Profile
+      <Scanner onScan={(result) => console.log(result)} />
+    </div>
+  );
 };
 
 export default Profile;
