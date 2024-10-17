@@ -55,7 +55,7 @@ const Profile = () => {
     fetchUserInfo("chackky");
   }, []);
 
-  console.log("user", user);
+  console.log("user logs", user);
 
   return (
     <div>
