@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { ref, set, push, get, update } from "firebase/database";
 import { db } from "../firebase";
-import { parseUsernames } from "../utils";
+import { encodeUsername } from "../utils";
 
 const users = [
   {
@@ -90,9 +90,8 @@ function Mockup() {
   // Function to add users to Firebase
   const addUsersToDatabase = async () => {
     for (const user of users) {
-      const parsedUsername = user.username.replace(".", "-");
       // Create a reference for the "users" collection
-      const usersRef = ref(db, `users/${parsedUsername}`);
+      const usersRef = ref(db, `users/${encodeUsername(user.username)}`);
 
       try {
         // Add user data (displayName, avatarUrl, connections, lastActive)
@@ -130,13 +129,16 @@ function Mockup() {
       };
 
       // Select two random users and add a new connection if it doesn't already exist
-      const randomUser1 =
-        users[Math.floor(Math.random() * users.length)]?.username;
+      const randomUser1 = encodeUsername(
+        users[Math.floor(Math.random() * users.length)].username
+      );
       let randomUser2 = randomUser1;
 
       // Make sure randomUser2 is different from randomUser1
       while (randomUser2 === randomUser1) {
-        randomUser2 = users[Math.floor(Math.random() * users.length)]?.username;
+        randomUser2 = encodeUsername(
+          users[Math.floor(Math.random() * users.length)].username
+        );
       }
 
       // Check if the connection between these two users already exists
@@ -150,10 +152,7 @@ function Mockup() {
           timestamp: Date.now(), // Unix timestamp of when the connection was made
         });
 
-        const userConnectionsRef = ref(
-          db,
-          `users/${parseUsernames(randomUser1)}/connections`
-        );
+        const userConnectionsRef = ref(db, `users/${randomUser1}/connections`);
 
         await update(userConnectionsRef, {
           [randomUser2]: true,
@@ -161,7 +160,7 @@ function Mockup() {
 
         const otherUserConnectionsRef = ref(
           db,
-          `users/${parseUsernames(randomUser2)}/connections`
+          `users/${randomUser2}/connections`
         );
         await update(otherUserConnectionsRef, {
           [randomUser1]: true,

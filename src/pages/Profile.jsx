@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { ref, get, set, update } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
-import { parseUsernames } from "../utils";
+import { encodeUsername } from "../utils";
 
 const Profile = () => {
   let connections = useUserConnections();
@@ -24,7 +24,7 @@ const Profile = () => {
 
       const userConnectionsRef = ref(
         db,
-        `users/${parseUsernames(user.username)}/connections`
+        `users/${encodeUsername(user.username)}/connections`
       );
 
       await update(userConnectionsRef, {
@@ -33,7 +33,7 @@ const Profile = () => {
 
       const otherUserConnectionsRef = ref(
         db,
-        `users/${parseUsernames(username)}/connections`
+        `users/${encodeUsername(username)}/connections`
       );
       await update(otherUserConnectionsRef, {
         [user.username]: true,
@@ -50,7 +50,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUserInfo("be_kindplss");
+    fetchUserInfo("chackky");
   }, []);
 
   console.log("user", user);

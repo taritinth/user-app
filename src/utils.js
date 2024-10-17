@@ -1,3 +1,3 @@
-export const parseUsernames = (text) => {
+export const encodeUsername = (text) => {
   return text.replace(".", "-");
 };
