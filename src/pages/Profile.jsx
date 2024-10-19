@@ -19,6 +19,7 @@ const Profile = () => {
 
     if (!isConnected) {
       await set(newConnectionRef, {
+        id: newConnectionRef.key,
         user1: user.username,
         user2: username,
         timestamp: Date.now(),
