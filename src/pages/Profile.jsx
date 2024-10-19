@@ -28,9 +28,12 @@ const Profile = () => {
         db,
         `users/${encodeUsername(user.username)}/connections`
       );
-
       await update(userConnectionsRef, {
         [username]: true,
+      });
+      const userRef = ref(db, `users/${user.username}`);
+      await update(userRef, {
+        lastActive: Date.now(),
       });
 
       const otherUserConnectionsRef = ref(
@@ -39,6 +42,10 @@ const Profile = () => {
       );
       await update(otherUserConnectionsRef, {
         [user.username]: true,
+      });
+      const otherUserRef = ref(db, `users/${username}`);
+      await update(otherUserRef, {
+        lastActive: Date.now(),
       });
     }
   };

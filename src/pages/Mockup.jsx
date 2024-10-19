@@ -82,12 +82,22 @@ function Mockup() {
           [randomUser2]: true,
         });
 
+        const userRef = ref(db, `users/${randomUser1}`);
+        await update(userRef, {
+          lastActive: Date.now(),
+        });
+
         const otherUserConnectionsRef = ref(
           db,
           `users/${randomUser2}/connections`
         );
         await update(otherUserConnectionsRef, {
           [randomUser1]: true,
+        });
+
+        const otherUserRef = ref(db, `users/${randomUser2}`);
+        await update(otherUserRef, {
+          lastActive: Date.now(),
         });
 
         console.log(
