@@ -19,6 +19,7 @@ function Mockup() {
         // Add user data (displayName, avatarUrl, connections, lastActive)
         await set(usersRef, {
           userId: user.userId,
+          username: user.username,
           displayName: user.displayName,
           avatarUrl: user.avatarUrl,
           connections: {}, // Initially empty connections
@@ -69,6 +70,7 @@ function Mockup() {
 
         // Add the new connection to Firebase with a timestamp
         await set(newConnectionRef, {
+          id: newConnectionRef.key,
           user1: randomUser1,
           user2: randomUser2,
           timestamp: Date.now(), // Unix timestamp of when the connection was made
