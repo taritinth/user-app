@@ -7,7 +7,7 @@ import { encodeUsername } from "../utils";
 import { Scanner } from "@yudiel/react-qr-scanner";
 
 const Profile = () => {
-  let connections = useUserConnections();
+  let connections = useUserConnections("dos4289");
 
   const [user, setUser] = useState(null);
 
@@ -59,10 +59,11 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUserInfo("chackky");
+    fetchUserInfo("dos4289");
   }, []);
 
   console.log("user logs", user);
+  console.log("connections logs", connections);
 
   //   Test Commit
 

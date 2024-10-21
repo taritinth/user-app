@@ -1,3 +1,1 @@
-export const encodeUsername = (text) => {
-  return text.replace(".", "-");
-};
+export const encodeUsername = (text) => text.replaceAll(".", "-");

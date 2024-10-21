@@ -1,36 +1,113 @@
-import { useState } from "react";
-
 import { ref, set, push, get, update } from "firebase/database";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { encodeUsername } from "../utils";
-
-import users from "./results.json";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
 
 function Mockup() {
-  const [count, setCount] = useState(0);
+  const clearConnections = async () => {
+    const connectionsRef = ref(db, "connections");
+    await set(connectionsRef, {});
+    console.log("Connections cleared.");
 
-  // Function to add users to Firebase
-  const addUsersToDatabase = async () => {
-    for (const user of users) {
-      // Create a reference for the "users" collection
-      const usersRef = ref(db, `users/${encodeUsername(user.username)}`);
+    const usersRef = ref(db, "users");
+    const usersSnapshot = await get(usersRef);
+    const users = usersSnapshot.val();
+
+    for (const userKey in users) {
+      const userConnectionsRef = ref(db, `users/${userKey}/connections`);
+      await set(userConnectionsRef, {});
+      console.log(`Connections for ${userKey} cleared.`);
+    }
+  };
+
+  // Add guests to the database e.g. guest1, guest2, etc.
+  const addGuestsToDatabase = async (from, to) => {
+    for (let i = from; i <= to; i++) {
+      const username = `guest${i}`;
+      const displayName = `Guest ${i}`;
+      const avatarUrl = ``;
 
       try {
-        // Add user data (displayName, avatarUrl, connections, lastActive)
-        await set(usersRef, {
-          userId: user.userId,
-          username: user.username,
-          displayName: user.displayName,
-          avatarUrl: user.avatarUrl,
-          connections: {}, // Initially empty connections
-          lastActive: Date.now(), // Unix timestamp for last active time
+        const uniqueFileName = `${encodeUsername(username)}.webp`;
+
+        const avatarStorageRef = storageRef(
+          storage,
+          `avatars/${uniqueFileName}`
+        );
+        const avatarResponse = await fetch(avatarUrl);
+        const avatarBlob = await avatarResponse.blob();
+
+        await uploadBytes(avatarStorageRef, avatarBlob, {
+          cacheControl: "public,max-age=31536000",
         });
-        console.log(`User ${user.username} added successfully.`);
+
+        const avatarDownloadUrl = await getDownloadURL(avatarStorageRef);
+
+        const usersRef = ref(db, `users/${encodeUsername(username)}`);
+
+        await set(usersRef, {
+          userId: uuidv4(),
+          username,
+          displayName,
+          avatarUrl: avatarDownloadUrl,
+          connections: {},
+          lastActive: Date.now(),
+        });
+
+        console.log(`User ${username} added successfully with avatar.`);
       } catch (error) {
         console.error("Error adding user: ", error);
       }
     }
   };
+
+  // Function to upload avatars to Firebase Storage and add users to Firebase Database
+  // const addUsersToDatabase = async () => {
+  //   for (const user of users) {
+  //     try {
+  //       // Generate a unique filename using uuid for the avatar
+  //       const uniqueFileName = `${encodeUsername(user.username)}.webp`;
+
+  //       // Upload the avatar image to Firebase Storage
+  //       const avatarStorageRef = storageRef(
+  //         storage,
+  //         `avatars/${uniqueFileName}`
+  //       );
+  //       const avatarResponse = await fetch(user.avatarUrl); // Fetch the image from the original URL
+  //       const avatarBlob = await avatarResponse.blob(); // Convert the image to a blob
+
+  //       // Upload avatar blob to Firebase Storage with a UUID filename
+  //       await uploadBytes(avatarStorageRef, avatarBlob, {
+  //         cacheControl: "public,max-age=31536000", // 1 year cache
+  //       });
+
+  //       // Get the download URL for the uploaded avatar
+  //       const avatarDownloadUrl = await getDownloadURL(avatarStorageRef);
+
+  //       // Reference to the "users" collection in the Realtime Database
+  //       const usersRef = ref(db, `users/${encodeUsername(user.username)}`);
+
+  //       // Add user data (with avatarDownloadUrl) to the Realtime Database
+  //       await set(usersRef, {
+  //         userId: user.userId,
+  //         username: user.username,
+  //         displayName: user.displayName,
+  //         avatarUrl: avatarDownloadUrl, // Save the download URL of the avatar
+  //         connections: {}, // Initially empty connections
+  //         lastActive: Date.now(), // Unix timestamp for last active time
+  //       });
+
+  //       console.log(`User ${user.username} added successfully with avatar.`);
+  //     } catch (error) {
+  //       console.error("Error adding user: ", error);
+  //     }
+  //   }
+  // };
 
   // Function to add random mock connections to Firebase
   const addMockConnections = async () => {
@@ -50,6 +127,12 @@ function Mockup() {
             (connection.user1 === user2 && connection.user2 === user1)
         );
       };
+
+      const usersRef = ref(db, "users");
+      const usersSnapshot = await get(usersRef);
+      const users = Object.entries(usersSnapshot.val()).map(([, value]) => ({
+        ...value,
+      }));
 
       // Select two random users and add a new connection if it doesn't already exist
       const randomUser1 = encodeUsername(
@@ -114,10 +197,16 @@ function Mockup() {
   };
 
   return (
-    <>
-      <button onClick={addUsersToDatabase}>Add Users to Database</button>
+    <div className="flex flex-col items-center justify-center gap-2">
+      {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
       <button onClick={addMockConnections}>Add Mock Connections</button>
-    </>
+      <button onClick={() => addGuestsToDatabase(1, 10)}>
+        Add Guests to Database
+      </button>
+      <button onClick={clearConnections} className="bg-red-500 text-white">
+        Clear Connections
+      </button>
+    </div>
   );
 }
 
