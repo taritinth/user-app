@@ -20,8 +20,8 @@ const Profile = () => {
     if (!isConnected) {
       await set(newConnectionRef, {
         id: newConnectionRef.key,
-        user1: user.username,
-        user2: username,
+        user1: encodeUsername(user.username),
+        user2: encodeUsername(username),
         timestamp: Date.now(),
       });
 
@@ -30,9 +30,9 @@ const Profile = () => {
         `users/${encodeUsername(user.username)}/connections`
       );
       await update(userConnectionsRef, {
-        [username]: true,
+        [encodeUsername(username)]: true,
       });
-      const userRef = ref(db, `users/${user.username}`);
+      const userRef = ref(db, `users/${encodeUsername(user.username)}`);
       await update(userRef, {
         lastActive: Date.now(),
       });
@@ -42,9 +42,9 @@ const Profile = () => {
         `users/${encodeUsername(username)}/connections`
       );
       await update(otherUserConnectionsRef, {
-        [user.username]: true,
+        [encodeUsername(user.username)]: true,
       });
-      const otherUserRef = ref(db, `users/${username}`);
+      const otherUserRef = ref(db, `users/${encodeUsername(username)}`);
       await update(otherUserRef, {
         lastActive: Date.now(),
       });
@@ -52,8 +52,7 @@ const Profile = () => {
   };
 
   const fetchUserInfo = async (username) => {
-    const parsedUsername = username.replace(".", "-");
-    const userRef = ref(db, `users/${parsedUsername}`);
+    const userRef = ref(db, `users/${encodeUsername(username)}`);
     const userSnapshot = await get(userRef);
     const userData = userSnapshot.val();
     setUser(userData);
