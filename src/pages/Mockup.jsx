@@ -30,7 +30,8 @@ function Mockup() {
     for (let i = from; i <= to; i++) {
       const username = `guest${i}`;
       const displayName = `Guest ${i}`;
-      const avatarUrl = ``;
+      const avatarUrl =
+        "https://pbs.twimg.com/profile_images/1810039515408678912/HIJv16jG_400x400.jpg";
 
       try {
         const uniqueFileName = `${encodeUsername(username)}.webp`;
@@ -200,7 +201,7 @@ function Mockup() {
     <div className="flex flex-col items-center justify-center gap-2">
       {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
       <button onClick={addMockConnections}>Add Mock Connections</button>
-      <button onClick={() => addGuestsToDatabase(1, 10)}>
+      <button onClick={() => addGuestsToDatabase(1, 5)}>
         Add Guests to Database
       </button>
       <button onClick={clearConnections} className="bg-red-500 text-white">
