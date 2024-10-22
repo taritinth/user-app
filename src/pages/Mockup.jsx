@@ -111,7 +111,7 @@ function Mockup() {
   // };
 
   // Function to add random mock connections to Firebase
-  const addMockConnections = async () => {
+  const addRandomConnections = async () => {
     try {
       // Reference to the 'connections' collection in Firebase
       const connectionsRef = ref(db, "connections");
@@ -200,7 +200,7 @@ function Mockup() {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
-      <button onClick={addMockConnections}>Add Mock Connections</button>
+      <button onClick={addRandomConnections}>Add Random Connections</button>
       <button onClick={() => addGuestsToDatabase(1, 5)}>
         Add Guests to Database
       </button>
