@@ -6,6 +6,7 @@ import Welcome from "./pages/Welcome";
 import Join from "./pages/Join";
 import Profile from "./pages/Profile";
 import Scanner from "./pages/Scanner";
+import Scanner2 from "./pages/Scanner2";
 
 import "./index.css";
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/scanner",
     element: <Scanner />,
+  },
+  {
+    path: "/scanner2",
+    element: <Scanner2 />,
   },
 ]);
 
