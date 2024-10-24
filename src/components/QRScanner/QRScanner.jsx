@@ -97,9 +97,8 @@ const QRScanner = () => {
 
       {/* Show loading indicator when not initialized */}
       <video ref={videoEl}></video>
-      <div ref={qrBoxEl} className="qr-box">
-        <CameraFrame />
-      </div>
+      <div ref={qrBoxEl} className="qr-box"></div>
+      <CameraFrame />
     </div>
   );
 };
