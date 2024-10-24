@@ -4,7 +4,7 @@ import { ref, get, set, update } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
 import { encodeUsername } from "../utils";
 
-import { Scanner } from "@yudiel/react-qr-scanner";
+import QRScanner from "../components/QRScanner";
 
 const Profile = () => {
   let connections = useUserConnections("dos4289");
@@ -67,7 +67,12 @@ const Profile = () => {
 
   //   Test Commit
 
-  return <div>Profile</div>;
+  return (
+    <div>
+      Profile
+      <QRScanner />
+    </div>
+  );
 };
 
 export default Profile;

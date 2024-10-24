@@ -6,7 +6,7 @@ import Welcome from "./pages/Welcome";
 import Join from "./pages/Join";
 import Profile from "./pages/Profile";
 
-import QRScanner from "./pages/QRScanner";
+import QRScanner from "./components/QRScanner";
 
 import "./index.css";
 
