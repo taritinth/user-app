@@ -24,8 +24,8 @@
     position: absolute;
     fill: none;
     left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-80%);
+    top: 20%;
+    transform: translateX(-50%)
 }
 
 /* Media Queries for mobile screens */
