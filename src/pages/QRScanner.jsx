@@ -71,7 +71,7 @@ const QRScanner = () => {
       {/* QR Scanner */}
       <video ref={videoEl}></video>
       <div ref={qrBoxEl} className="qr-box">
-        {videoEl?.current && <CameraFrame />}
+        <CameraFrame />
       </div>
 
       {/* Non-blocking result display */}
