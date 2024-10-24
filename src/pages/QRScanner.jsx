@@ -15,6 +15,10 @@ const QRScanner = () => {
 
   // Success
   const onScanSuccess = (result) => {
+    if (!result?.data) {
+      console.log("QR Code is empty or not valid");
+      return;
+    }
     console.log(result);
     setScannedResult(result?.data);
     setShowResult(true); // Show result in non-blocking way
