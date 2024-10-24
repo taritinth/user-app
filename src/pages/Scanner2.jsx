@@ -56,7 +56,7 @@ const Scanner2 = () => {
   const onNewScanResult = (decodedText, decodedResult) => {
     // handle decoded results here
     console.log(`Scan result: ${decodedText}`, decodedResult);
-    alert(`Scan result: ${decodedText}`);
+    // alert(`Scan result: ${decodedText}`);
   };
 
   return (
