@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import QrScanner from "qr-scanner";
 import "./qrScanner.css";
 
-const QrReader = () => {
+const QRScanner = () => {
   // QR States
   const scanner = useRef(null);
   const videoEl = useRef(null);
@@ -66,7 +66,7 @@ const QrReader = () => {
       {/* QR Scanner */}
       <video ref={videoEl}></video>
       <div ref={qrBoxEl} className="qr-box">
-        {!videoEl?.current && (
+        {/* {!videoEl?.current && (
           <img
             src="/static/images/icons/scan_qr1.svg"
             alt="Qr Frame"
@@ -74,7 +74,7 @@ const QrReader = () => {
             height={256}
             className="qr-frame"
           />
-        )}
+        )} */}
       </div>
 
       {/* Non-blocking result display */}
@@ -88,4 +88,4 @@ const QrReader = () => {
   );
 };
 
-export default QrReader;
+export default QRScanner;

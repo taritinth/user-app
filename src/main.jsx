@@ -5,8 +5,8 @@ import Mockup from "./pages/Mockup";
 import Welcome from "./pages/Welcome";
 import Join from "./pages/Join";
 import Profile from "./pages/Profile";
-import Scanner from "./pages/Scanner";
-import Scanner2 from "./pages/Scanner2";
+import QRScanner from "./pages/QRScanner";
+import HTML5QR from "./pages/HTML5QR";
 
 import "./index.css";
 
@@ -30,12 +30,12 @@ const router = createBrowserRouter([
     element: <Mockup />,
   },
   {
-    path: "/scanner",
-    element: <Scanner />,
+    path: "/qr-scanner",
+    element: <QRScanner />,
   },
   {
-    path: "/scanner2",
-    element: <Scanner2 />,
+    path: "/html5-qrcode",
+    element: <HTML5QR />,
   },
 ]);
 

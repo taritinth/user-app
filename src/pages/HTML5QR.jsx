@@ -52,7 +52,7 @@ const Html5QrcodePlugin = (props) => {
   return <div id={qrcodeRegionId} />;
 };
 
-const Scanner2 = () => {
+const HTML5QR = () => {
   const onNewScanResult = (decodedText, decodedResult) => {
     // handle decoded results here
     console.log(`Scan result: ${decodedText}`, decodedResult);
@@ -69,4 +69,4 @@ const Scanner2 = () => {
   );
 };
 
-export default Scanner2;
+export default HTML5QR;
