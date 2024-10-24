@@ -5,6 +5,7 @@ import Mockup from "./pages/Mockup";
 import Welcome from "./pages/Welcome";
 import Join from "./pages/Join";
 import Profile from "./pages/Profile";
+import Scanner from "./pages/Scanner";
 
 import "./index.css";
 
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/mockup",
     element: <Mockup />,
+  },
+  {
+    path: "/scanner",
+    element: <Scanner />,
   },
 ]);
 
