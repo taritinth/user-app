@@ -67,7 +67,30 @@ const Profile = () => {
 
   //   Test Commit
 
-  return <div>Profile</div>;
+  return (
+    <div>
+      Profile
+      <Scanner
+        formats={["qr_code", "databar", "databar_expanded", "codabar"]}
+        onScan={(result) => {
+          alert(JSON.stringify(result));
+        }}
+        onError={(error) => {
+          alert(JSON.stringify(error));
+        }}
+        components={{
+          audio: false,
+          onOff: true,
+          torch: true,
+          zoom: true,
+          finder: true,
+          tracker: "outline",
+        }}
+        allowMultiple={true}
+        scanDelay={2000}
+      />
+    </div>
+  );
 };
 
 export default Profile;

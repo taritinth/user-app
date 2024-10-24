@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import QrScanner from "qr-scanner";
 import "./qrScanner.css";
-import { CameraFrame } from "./CameraFrame";
 
 const QRScanner = () => {
   // QR States
@@ -71,7 +70,15 @@ const QRScanner = () => {
       {/* QR Scanner */}
       <video ref={videoEl}></video>
       <div ref={qrBoxEl} className="qr-box">
-        {!videoEl?.current && <CameraFrame />}
+        {/* {!videoEl?.current && (
+          <img
+            src="/static/images/icons/scan_qr1.svg"
+            alt="Qr Frame"
+            width={256}
+            height={256}
+            className="qr-frame"
+          />
+        )} */}
       </div>
 
       {/* Non-blocking result display */}
