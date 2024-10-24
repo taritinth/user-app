@@ -9,7 +9,7 @@ export const CameraFrame = () => {
       style={{
         width: 256,
         height: 256,
-        position: "relative",
+        position: "absolute",
       }}
     >
       <svg

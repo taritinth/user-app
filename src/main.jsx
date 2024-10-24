@@ -12,6 +12,10 @@ import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import { StyledEngineProvider } from "@mui/material/styles";
+import { Global } from "@emotion/react";
+import CssBaseline from "@mui/material/CssBaseline";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,6 +41,17 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <StyledEngineProvider injectFirst>
+      <CssBaseline />
+      <Global
+        styles={{
+          ".MuiDrawer-root > .MuiPaper-root": {
+            height: `calc(100% - 100px)`,
+            overflow: "visible",
+          },
+        }}
+      />
+      <RouterProvider router={router} />
+    </StyledEngineProvider>
   </StrictMode>
 );
