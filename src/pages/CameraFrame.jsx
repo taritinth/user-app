@@ -5,6 +5,7 @@ const strokeColor = "white";
 export const CameraFrame = () => {
   return (
     <div
+      className="qr-frame"
       style={{
         width: 256,
         height: 256,
