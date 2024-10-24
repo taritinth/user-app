@@ -19,7 +19,7 @@ const QrReader = () => {
     // ✅ Handle success.
     // 😎 You can do whatever you want with the scanned result.
     setScannedResult(result?.data);
-    alert(result?.data);
+    alert(JSON.stringify(result));
   };
 
   // Fail
@@ -41,6 +41,7 @@ const QrReader = () => {
         highlightCodeOutline: true,
         // 📦 A custom div which will pair with "highlightScanRegion" option above 👆. This gives us full control over our scan region.
         overlay: qrBoxEl?.current || undefined,
+        maxScansPerSecond: 5,
       });
 
       // 🚀 Start QR Scanner
