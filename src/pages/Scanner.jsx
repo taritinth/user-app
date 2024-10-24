@@ -87,7 +87,7 @@ const QrReader = () => {
       </div>
 
       {/* Show Data Result if scan is success */}
-      {scannedResult && (
+      {/* {scannedResult && (
         <p
           style={{
             position: "absolute",
@@ -99,7 +99,7 @@ const QrReader = () => {
         >
           Scanned Result: {scannedResult}
         </p>
-      )}
+      )} */}
     </div>
   );
 };
