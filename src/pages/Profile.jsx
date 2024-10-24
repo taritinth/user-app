@@ -14,6 +14,8 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
+import { useSnackbar } from "notistack";
+
 const drawerBleeding = 56;
 
 const StyledBox = styled("div")(({ theme }) => ({
@@ -39,6 +41,7 @@ const Puller = styled("div")(({ theme }) => ({
 //
 
 const Profile = (props) => {
+  const { enqueueSnackbar } = useSnackbar();
   let connections = useUserConnections("dos4289");
 
   const [user, setUser] = useState(null);
@@ -116,6 +119,15 @@ const Profile = (props) => {
       Profile
       <Box sx={{ textAlign: "center", pt: 1 }}>
         <Button onClick={toggleDrawer(true)}>Open</Button>
+        <Button
+          onClick={() =>
+            enqueueSnackbar("Hello, world!", {
+              variant: "success",
+            })
+          }
+        >
+          Snackbar
+        </Button>
       </Box>
       <SwipeableDrawer
         container={container}

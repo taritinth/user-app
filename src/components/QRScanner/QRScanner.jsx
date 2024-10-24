@@ -3,7 +3,10 @@ import QrScanner from "qr-scanner";
 import "./qrScanner.css";
 import { CameraFrame } from "./CameraFrame";
 
+import { useSnackbar } from "notistack";
+
 const QRScanner = () => {
+  const { enqueueSnackbar } = useSnackbar();
   // QR States
   const scanner = useRef(null);
   const videoEl = useRef(null);
@@ -20,6 +23,8 @@ const QRScanner = () => {
       console.log("QR Code is empty or not valid");
       return;
     }
+    enqueueSnackbar(result?.data, { variant: "success" });
+
     console.log(result);
     setScannedResult(result?.data);
     setShowResult(true); // Show result in non-blocking way
