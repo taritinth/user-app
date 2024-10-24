@@ -4,6 +4,8 @@ import "./qrScanner.css";
 import { CameraFrame } from "./CameraFrame";
 
 import { useSnackbar } from "notistack";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Box } from "@mui/material";
 
 const QRScanner = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -12,6 +14,7 @@ const QRScanner = () => {
   const videoEl = useRef(null);
   const qrBoxEl = useRef(null);
   const [qrOn, setQrOn] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   // Result
   const [scannedResult, setScannedResult] = useState("");
@@ -19,8 +22,10 @@ const QRScanner = () => {
 
   // Success
   const onScanSuccess = (result) => {
+    if (scannedResult !== "") return;
     if (!result?.data) {
       console.log("QR Code is empty or not valid");
+      enqueueSnackbar("QR Code is empty or not valid", { variant: "error" });
       return;
     }
     enqueueSnackbar(result?.data, { variant: "success" });
@@ -44,13 +49,16 @@ const QRScanner = () => {
         highlightScanRegion: true,
         highlightCodeOutline: true,
         overlay: qrBoxEl?.current || undefined,
-        maxScansPerSecond: 5,
+        maxScansPerSecond: 1,
       });
 
       // Start QR Scanner
       scanner?.current
         ?.start()
-        .then(() => setQrOn(true))
+        .then(() => {
+          setQrOn(true);
+          setInitialized(true); // Set initialized to true when scanner starts successfully
+        })
         .catch((err) => {
           if (err) setQrOn(false);
         });
@@ -73,19 +81,25 @@ const QRScanner = () => {
 
   return (
     <div className="qr-reader">
+      {!initialized && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
       {/* QR Scanner */}
+
+      {/* Show loading indicator when not initialized */}
       <video ref={videoEl}></video>
       <div ref={qrBoxEl} className="qr-box">
         <CameraFrame />
       </div>
-
-      {/* Non-blocking result display */}
-      {showResult && (
-        <div className="result-display">
-          <p>Scanned Result: {scannedResult}</p>
-          <button onClick={() => setShowResult(false)}>Close</button>
-        </div>
-      )}
     </div>
   );
 };

@@ -57,6 +57,10 @@ h6 {
   isolation: isolate;
 }
 
+.notistack-SnackbarContainer {
+  z-index: 9999 !important;
+}
+
 /* 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
