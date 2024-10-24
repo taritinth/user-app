@@ -19,6 +19,7 @@ const QrReader = () => {
     // ✅ Handle success.
     // 😎 You can do whatever you want with the scanned result.
     setScannedResult(result?.data);
+    alert(result?.data);
   };
 
   // Fail
