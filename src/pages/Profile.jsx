@@ -69,7 +69,8 @@ const Profile = (props) => {
   const handleScan = (data) => {
     if (data) {
       console.log("Scanned data", data);
-      findUser(data);
+      const username = data.split("u/").pop();
+      findUser(username);
     }
   };
 
