@@ -1,14 +1,17 @@
+/* eslint-disable react/prop-types */
 import { useRef, useState, useEffect } from "react";
 import QrScanner from "qr-scanner";
 import "./qrScanner.css";
 import { CameraFrame } from "./CameraFrame";
 
-import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Box } from "@mui/material";
 
-const QRScanner = ({ onScan }) => {
-  const { enqueueSnackbar } = useSnackbar();
+import { useDialog } from "../../context/DialogContext";
+
+const QRScanner = ({ validResultFormat, onScan, isLoading, isNotFound }) => {
+  const { openDialog, closeDialog } = useDialog();
+
   // QR States
   const scanner = useRef(null);
   const videoEl = useRef(null);
@@ -16,20 +19,44 @@ const QRScanner = ({ onScan }) => {
   const [qrOn, setQrOn] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
-  // Result
-  const [scannedResult, setScannedResult] = useState();
-  const scanCount = useRef(0);
+  const isScanError = useRef(false);
 
-  console.log("QRScanner -> scannedResult", scannedResult);
+  // Result
+  const scanCount = useRef(0);
 
   // Success
   const onScanSuccess = (result) => {
-    if (scanCount.current > 0) return;
+    if (scanCount.current > 0 || isNotFound || isLoading || isScanError.current)
+      return;
+
+    // Check if the scanned result is in the valid format
+    if (validResultFormat && !result?.data?.startsWith(validResultFormat)) {
+      console.log("QR Code is not in the valid format");
+      isScanError.current = true;
+
+      openDialog({
+        type: "error",
+        title: "Invalid QR Code",
+        content: "The scanned QR Code is not in valid format.",
+        onClose: () => {
+          isScanError.current = false;
+          closeDialog();
+        },
+      });
+
+      return;
+    }
 
     scanCount.current += 1;
     onScan && onScan(result?.data);
-    setScannedResult(result?.data);
   };
+
+  // After user acknowledges the error, reset the scan count
+  useEffect(() => {
+    if (!isNotFound) {
+      scanCount.current = 0;
+    }
+  }, [isNotFound]);
 
   // Fail
   const onScanFail = (err) => {

@@ -17,6 +17,7 @@ import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import { SnackbarProvider } from "notistack";
+import DialogProvider from "./context/DialogContext";
 
 const router = createBrowserRouter([
   {
@@ -54,7 +55,9 @@ createRoot(document.getElementById("root")).render(
         }}
       />
       <SnackbarProvider maxSnack={3}>
-        <RouterProvider router={router} />
+        <DialogProvider>
+          <RouterProvider router={router} />
+        </DialogProvider>
       </SnackbarProvider>
     </StyledEngineProvider>
   </StrictMode>

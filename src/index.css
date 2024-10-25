@@ -58,7 +58,7 @@ h6 {
 }
 
 .notistack-SnackbarContainer {
-  z-index: 9999 !important;
+  z-index: 1600 !important;
 }
 
 /* 

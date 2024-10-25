@@ -15,6 +15,10 @@ import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { useSnackbar } from "notistack";
+import { useDialog } from "../context/DialogContext";
+
+import Loading from "../components/Loading";
+import ReactDOM from "react-dom";
 
 const drawerBleeding = 56;
 
@@ -41,12 +45,16 @@ const Puller = styled("div")(({ theme }) => ({
 //
 
 const Profile = (props) => {
+  const { openDialog, closeDialog } = useDialog();
+
   const { enqueueSnackbar } = useSnackbar();
   let connections = useUserConnections("dos4289");
 
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -59,21 +67,49 @@ const Profile = (props) => {
     window !== undefined ? () => window().document.body : undefined;
 
   const handleScan = (data) => {
-    toggleDrawer(false)();
-
     if (data) {
       console.log("Scanned data", data);
-      enqueueSnackbar(data, { variant: "success" });
-      // findUser(data);
+      findUser(data);
     }
   };
 
   const findUser = async (username) => {
-    const userRef = ref(db, `users/${encodeUsername(username)}`);
-    const userSnapshot = await get(userRef);
-    const userData = userSnapshot.val();
+    try {
+      setIsLoading(true);
+      const userRef = ref(db, `users/${encodeUsername(username)}`);
+      const userSnapshot = await get(userRef);
+      const userData = userSnapshot.val();
 
-    // Close QR Scanner & Open confirmation dialog
+      console.log("userData", userData);
+
+      // Close QR Scanner & Open confirmation dialog
+      if (userData) {
+        toggleDrawer(false)();
+        openDialog({
+          type: "confirm",
+          title: `Would you like to connect with ${username}?`,
+          onConfirm: () => {
+            // createConnection(username);
+            closeDialog();
+          },
+        });
+      } else {
+        setIsNotFound(true);
+        openDialog({
+          type: "error",
+          title: "User not found",
+          content: `The user ${username} is not found.`,
+          onClose: () => {
+            setIsNotFound(false);
+            closeDialog();
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error finding user: ", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const createConnection = async (username) => {
@@ -127,14 +163,14 @@ const Profile = (props) => {
     fetchUserInfo("dos4289");
   }, []);
 
-  console.log("user logs", user);
-  console.log("connections logs", connections);
-
-  //   Test Commit
-
   return (
     <div>
       Profile
+      {isLoading &&
+        ReactDOM.createPortal(
+          <Loading />,
+          document.getElementById("custom-root") // Ensure this div exists in your HTML
+        )}
       <Box sx={{ textAlign: "center", pt: 1 }}>
         <Button onClick={toggleDrawer(true)}>Open</Button>
         {/* <Button
@@ -175,7 +211,12 @@ const Profile = (props) => {
             Scan QR Code
           </Typography>
         </StyledBox>
-        <QRScanner onScan={handleScan} />
+        <QRScanner
+          // validResultFormat="https://nads-meet-nads.vercel.app/u/"
+          isNotFound={isNotFound}
+          isLoading={isLoading}
+          onScan={handleScan}
+        />
       </SwipeableDrawer>
     </div>
   );
