@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Box } from "@mui/material";
 
-const QRScanner = () => {
+const QRScanner = ({ onScan }) => {
   const { enqueueSnackbar } = useSnackbar();
   // QR States
   const scanner = useRef(null);
@@ -17,27 +17,23 @@ const QRScanner = () => {
   const [initialized, setInitialized] = useState(false);
 
   // Result
-  const [scannedResult, setScannedResult] = useState("");
-  const [showResult, setShowResult] = useState(false); // New state to control result display
+  const [scannedResult, setScannedResult] = useState();
+  const scanCount = useRef(0);
+
+  console.log("QRScanner -> scannedResult", scannedResult);
 
   // Success
   const onScanSuccess = (result) => {
-    if (scannedResult !== "") return;
-    if (!result?.data) {
-      console.log("QR Code is empty or not valid");
-      enqueueSnackbar("QR Code is empty or not valid", { variant: "error" });
-      return;
-    }
-    enqueueSnackbar(result?.data, { variant: "success" });
+    if (scanCount.current > 0) return;
 
-    console.log(result);
+    scanCount.current += 1;
+    onScan && onScan(result?.data);
     setScannedResult(result?.data);
-    setShowResult(true); // Show result in non-blocking way
   };
 
   // Fail
   const onScanFail = (err) => {
-    console.log(err);
+    console.log("QR Scan failed:", err);
   };
 
   useEffect(() => {

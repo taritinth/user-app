@@ -58,6 +58,24 @@ const Profile = (props) => {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
+  const handleScan = (data) => {
+    toggleDrawer(false)();
+
+    if (data) {
+      console.log("Scanned data", data);
+      enqueueSnackbar(data, { variant: "success" });
+      // findUser(data);
+    }
+  };
+
+  const findUser = async (username) => {
+    const userRef = ref(db, `users/${encodeUsername(username)}`);
+    const userSnapshot = await get(userRef);
+    const userData = userSnapshot.val();
+
+    // Close QR Scanner & Open confirmation dialog
+  };
+
   const createConnection = async (username) => {
     const connectionsRef = ref("connections");
     const newConnectionRef = connectionsRef.push();
@@ -119,7 +137,7 @@ const Profile = (props) => {
       Profile
       <Box sx={{ textAlign: "center", pt: 1 }}>
         <Button onClick={toggleDrawer(true)}>Open</Button>
-        <Button
+        {/* <Button
           onClick={() =>
             enqueueSnackbar("Hello, world!", {
               variant: "success",
@@ -127,7 +145,7 @@ const Profile = (props) => {
           }
         >
           Snackbar
-        </Button>
+        </Button> */}
       </Box>
       <SwipeableDrawer
         container={container}
@@ -157,7 +175,7 @@ const Profile = (props) => {
             Scan QR Code
           </Typography>
         </StyledBox>
-        <QRScanner />
+        <QRScanner onScan={handleScan} />
       </SwipeableDrawer>
     </div>
   );
