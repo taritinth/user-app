@@ -212,7 +212,7 @@ const Profile = (props) => {
           </Typography>
         </StyledBox>
         <QRScanner
-          // validResultFormat="https://nads-meet-nads.vercel.app/u/"
+          validResultFormat="https://nads-meet-nads.vercel.app/u/"
           isNotFound={isNotFound}
           isLoading={isLoading}
           onScan={handleScan}
