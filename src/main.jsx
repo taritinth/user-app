@@ -5,6 +5,7 @@ import Mockup from "./pages/Mockup";
 import Welcome from "./pages/Welcome";
 import Join from "./pages/Join";
 import Profile from "./pages/Profile";
+import User from "./pages/User";
 
 import QRScanner from "./components/QRScanner";
 
@@ -37,8 +38,8 @@ const router = createBrowserRouter([
     element: <Mockup />,
   },
   {
-    path: "/qr",
-    element: <QRScanner />,
+    path: "/u/:username",
+    element: <User />,
   },
 ]);
 
