@@ -65,10 +65,15 @@ const Profile = (props) => {
       const username = data.split("u/").pop();
 
       if (username === user.username) {
+        setIsNotFound(true);
         openDialog({
           type: "error",
           title: "Invalid QR Code",
           content: "Bro, you can't connect with yourself.",
+          onClose: () => {
+            setIsNotFound(false);
+            closeDialog();
+          },
         });
         return;
       }
