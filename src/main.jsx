@@ -1,47 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import Mockup from "./pages/Mockup";
-import Welcome from "./pages/Welcome";
-import Join from "./pages/Join";
-import Profile from "./pages/Profile";
-import User from "./pages/User";
-
-import QRScanner from "./components/QRScanner";
-
 import "./index.css";
-
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { StyledEngineProvider } from "@mui/material/styles";
 import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import { SnackbarProvider } from "notistack";
-import DialogProvider from "./context/DialogContext";
+import AuthProvider from "./context/AuthContext";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Welcome />,
-  },
-  {
-    path: "/join",
-    element: <Join />,
-  },
-  {
-    path: "/profile",
-    element: <Profile />,
-  },
-  {
-    path: "/mockup",
-    element: <Mockup />,
-  },
-  {
-    path: "/u/:username",
-    element: <User />,
-  },
-]);
+import App from "./App";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -56,9 +25,9 @@ createRoot(document.getElementById("root")).render(
         }}
       />
       <SnackbarProvider maxSnack={3}>
-        <DialogProvider>
-          <RouterProvider router={router} />
-        </DialogProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </SnackbarProvider>
     </StyledEngineProvider>
   </StrictMode>

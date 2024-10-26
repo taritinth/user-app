@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { db } from "../firebase";
 import { ref, get, set, update } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
@@ -10,17 +11,15 @@ import { styled } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
-import { useSnackbar } from "notistack";
 import { useDialog } from "../context/DialogContext";
 
-import Loading from "../components/Loading";
-import ReactDOM from "react-dom";
 import { IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
+import { useAuth } from "../context/AuthContext";
+import { useLoading } from "../context/LoadingContext";
 
 const drawerBleeding = 56;
 
@@ -34,13 +33,13 @@ const StyledBox = styled("div")(({ theme }) => ({
 //
 
 const Profile = (props) => {
+  const { user } = useAuth();
   const { openDialog, closeDialog } = useDialog();
 
-  const { enqueueSnackbar } = useSnackbar();
-  let connections = useUserConnections("dos4289");
+  const connections = useUserConnections(user?.username);
+  const { isLoading, setIsLoading } = useLoading();
 
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [user, setUser] = useState(null);
 
   const [open, setOpen] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
@@ -66,6 +65,7 @@ const Profile = (props) => {
   const findUser = async (username) => {
     try {
       setIsLoading(true);
+
       const userRef = ref(db, `users/${encodeUsername(username)}`);
       const userSnapshot = await get(userRef);
       const userData = userSnapshot.val();
@@ -79,7 +79,7 @@ const Profile = (props) => {
           type: "confirm",
           title: `Would you like to connect with ${username}?`,
           onConfirm: () => {
-            // createConnection(username);
+            createConnection(username);
             closeDialog();
           },
         });
@@ -103,76 +103,59 @@ const Profile = (props) => {
   };
 
   const createConnection = async (username) => {
-    const connectionsRef = ref("connections");
-    const newConnectionRef = connectionsRef.push();
+    try {
+      setIsLoading(true);
 
-    const isConnected = user?.connections?.[username];
+      const connectionsRef = ref("connections");
+      const newConnectionRef = connectionsRef.push();
 
-    if (!isConnected) {
-      await set(newConnectionRef, {
-        id: newConnectionRef.key,
-        user1: encodeUsername(user.username),
-        user2: encodeUsername(username),
-        timestamp: Date.now(),
-      });
+      const isConnected = user?.connections?.[username];
 
-      const userConnectionsRef = ref(
-        db,
-        `users/${encodeUsername(user.username)}/connections`
-      );
-      await update(userConnectionsRef, {
-        [encodeUsername(username)]: true,
-      });
-      const userRef = ref(db, `users/${encodeUsername(user.username)}`);
-      await update(userRef, {
-        lastActive: Date.now(),
-      });
+      if (!isConnected) {
+        await set(newConnectionRef, {
+          id: newConnectionRef.key,
+          user1: encodeUsername(user.username),
+          user2: encodeUsername(username),
+          timestamp: Date.now(),
+        });
 
-      const otherUserConnectionsRef = ref(
-        db,
-        `users/${encodeUsername(username)}/connections`
-      );
-      await update(otherUserConnectionsRef, {
-        [encodeUsername(user.username)]: true,
-      });
-      const otherUserRef = ref(db, `users/${encodeUsername(username)}`);
-      await update(otherUserRef, {
-        lastActive: Date.now(),
-      });
+        const userConnectionsRef = ref(
+          db,
+          `users/${encodeUsername(user.username)}/connections`
+        );
+        await update(userConnectionsRef, {
+          [encodeUsername(username)]: true,
+        });
+        const userRef = ref(db, `users/${encodeUsername(user.username)}`);
+        await update(userRef, {
+          lastActive: Date.now(),
+        });
+
+        const otherUserConnectionsRef = ref(
+          db,
+          `users/${encodeUsername(username)}/connections`
+        );
+        await update(otherUserConnectionsRef, {
+          [encodeUsername(user.username)]: true,
+        });
+        const otherUserRef = ref(db, `users/${encodeUsername(username)}`);
+        await update(otherUserRef, {
+          lastActive: Date.now(),
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchUserInfo = async (username) => {
-    const userRef = ref(db, `users/${encodeUsername(username)}`);
-    const userSnapshot = await get(userRef);
-    const userData = userSnapshot.val();
-    setUser(userData);
-  };
-
-  useEffect(() => {
-    fetchUserInfo("dos4289");
-  }, []);
-
   return (
     <div>
-      Profile
-      {isLoading &&
-        ReactDOM.createPortal(
-          <Loading />,
-          document.getElementById("custom-root") // Ensure this div exists in your HTML
-        )}
       <Box sx={{ textAlign: "center", pt: 1 }}>
         <Button onClick={toggleDrawer(true)}>Open</Button>
-        {/* <Button
-          onClick={() =>
-            enqueueSnackbar("Hello, world!", {
-              variant: "success",
-            })
-          }
-        >
-          Snackbar
-        </Button> */}
       </Box>
+      {user?.username}
       <SwipeableDrawer
         container={container}
         anchor="bottom"

@@ -8,6 +8,11 @@ const useUserConnections = (username) => {
   const [connections, setConnections] = useState([]);
 
   useEffect(() => {
+    if (!username) {
+      console.log("No username provided.");
+      return;
+    }
+
     const fetchConnections = async () => {
       const db = getDatabase();
       const userConnectionsRef = ref(
