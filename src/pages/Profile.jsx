@@ -36,7 +36,10 @@ const Profile = (props) => {
   const { user } = useAuth();
   const { openDialog, closeDialog } = useDialog();
 
-  const connections = useUserConnections(user?.username);
+  const { connections, isLoading: isConnectionsLoading } = useUserConnections(
+    user?.username
+  );
+
   const { isLoading, setIsLoading } = useLoading();
 
   console.log("connections", connections);
@@ -171,9 +174,15 @@ const Profile = (props) => {
         <Button onClick={toggleDrawer(true)}>Open</Button>
       </Box>
       {user?.username}
-      {connections.map((user, index) => (
-        <div key={index}>{user.displayName}</div>
-      ))}
+      {isConnectionsLoading ? (
+        <div>Loading connections...</div>
+      ) : (
+        <div>
+          {connections.map((user, index) => (
+            <div key={index}>{user.displayName}</div>
+          ))}
+        </div>
+      )}
       <SwipeableDrawer
         container={container}
         anchor="bottom"

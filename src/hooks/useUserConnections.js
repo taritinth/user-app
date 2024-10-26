@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
-import {
-  getDatabase,
-  ref,
-  onValue,
-  get,
-  onChildAdded,
-} from "firebase/database";
+import { getDatabase, ref, onValue, get } from "firebase/database";
 
 import { encodeUsername } from "../utils";
 
 // Real-time listener for user's connections
 const useUserConnections = (username) => {
   const [connections, setConnections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!username) {
       console.log("No username provided.");
+      setIsLoading(false);
       return;
     }
 
@@ -25,12 +21,6 @@ const useUserConnections = (username) => {
         db,
         `users/${encodeUsername(username)}/connections`
       );
-
-      // const userSnapshot = await get(userConnectionsRef);
-      // const data = userSnapshot.val();
-      // if (data) {
-      //   setConnections(Object.keys(data));
-      // }
 
       const unsubscribe = onValue(userConnectionsRef, (snapshot) => {
         const data = snapshot.val();
@@ -47,9 +37,10 @@ const useUserConnections = (username) => {
 
           Promise.all(connections).then((connections) => {
             setConnections(connections);
+            setIsLoading(false);
           });
-
-          // setConnections(Object.keys(data));
+        } else {
+          setIsLoading(false);
         }
       });
 
@@ -61,7 +52,7 @@ const useUserConnections = (username) => {
     return () => unsubscribe;
   }, [username]);
 
-  return connections;
+  return { connections, isLoading };
 };
 
 export default useUserConnections;
