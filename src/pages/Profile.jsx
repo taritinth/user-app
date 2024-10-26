@@ -111,13 +111,16 @@ const Profile = (props) => {
     try {
       setIsLoading(true);
 
-      const connectionsRef = ref(db, "connections");
-      const newConnectionRef = push(connectionsRef);
+      const userConnectedRef = ref(
+        db,
+        `users/${encodeUsername(user.username)}/connections/${encodeUsername(
+          userData?.username
+        )}`
+      );
+      const userConnectedSnapshot = await get(userConnectedRef);
+      const userConnectedData = userConnectedSnapshot.val();
 
-      const isConnected =
-        user?.connections?.[encodeUsername(userData?.username)];
-
-      if (isConnected) {
+      if (userConnectedData) {
         console.log("Connection already exists");
         openDialog({
           type: "error",
@@ -127,6 +130,9 @@ const Profile = (props) => {
         setIsLoading(false);
         return;
       }
+
+      const connectionsRef = ref(db, "connections");
+      const newConnectionRef = push(connectionsRef);
 
       await set(newConnectionRef, {
         id: newConnectionRef.key,
