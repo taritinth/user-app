@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 import { useDialog } from "../context/DialogContext";
+import { Button } from "@mui/material";
 
 const User = () => {
   const { openDialog, closeDialog } = useDialog();
@@ -70,7 +71,9 @@ const User = () => {
         (user ? (
           <div>
             <h1>{user.displayName}</h1>
-            <button onClick={handleSignIn}>Join</button>
+            <Button variant="contained" onClick={handleSignIn}>
+              Join
+            </Button>
           </div>
         ) : (
           <div>Not found</div>
