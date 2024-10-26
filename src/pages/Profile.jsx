@@ -63,6 +63,16 @@ const Profile = (props) => {
     if (data) {
       console.log("Scanned data", data);
       const username = data.split("u/").pop();
+
+      if (username === user.username) {
+        openDialog({
+          type: "error",
+          title: "Invalid QR Code",
+          content: "Bro, you can't connect with yourself.",
+        });
+        return;
+      }
+
       findUser(username);
     }
   };
