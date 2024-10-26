@@ -19,6 +19,8 @@ import { useDialog } from "../context/DialogContext";
 
 import Loading from "../components/Loading";
 import ReactDOM from "react-dom";
+import { IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 const drawerBleeding = 56;
 
@@ -26,19 +28,6 @@ const StyledBox = styled("div")(({ theme }) => ({
   backgroundColor: "#fff",
   ...theme.applyStyles("dark", {
     backgroundColor: grey[800],
-  }),
-}));
-
-const Puller = styled("div")(({ theme }) => ({
-  width: 30,
-  height: 6,
-  backgroundColor: grey[300],
-  borderRadius: 3,
-  position: "absolute",
-  top: 8,
-  left: "calc(50% - 15px)",
-  ...theme.applyStyles("dark", {
-    backgroundColor: grey[900],
   }),
 }));
 
@@ -205,12 +194,24 @@ const Profile = (props) => {
             visibility: "visible",
             right: 0,
             left: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <Puller />
-          <Typography sx={{ p: 2, color: "text.secondary" }}>
+          <div></div> {/* Empty div to align the title */}
+          <Typography sx={{ p: 2, color: "text.secondary", fontWeight: 500 }}>
             Scan QR Code
           </Typography>
+          <IconButton
+            sx={{
+              width: 48,
+              height: 48,
+            }}
+            onClick={toggleDrawer(false)}
+          >
+            <Close />
+          </IconButton>
         </StyledBox>
         <QRScanner
           validResultFormat="https://nads-meet-nads.vercel.app/u/"
