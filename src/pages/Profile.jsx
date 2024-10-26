@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { db } from "../firebase";
-import { ref, get, set, update } from "firebase/database";
+import { ref, get, set, update, push } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
 import { encodeUsername } from "../utils";
 
@@ -38,6 +38,8 @@ const Profile = (props) => {
 
   const connections = useUserConnections(user?.username);
   const { isLoading, setIsLoading } = useLoading();
+
+  console.log("connections", connections);
 
   // const [user, setUser] = useState(null);
 
@@ -77,9 +79,9 @@ const Profile = (props) => {
         toggleDrawer(false)();
         openDialog({
           type: "confirm",
-          title: `Would you like to connect with ${username}?`,
+          title: `Would you like to connect with ${userData.displayName}?`,
           onConfirm: () => {
-            createConnection(username);
+            createConnection(userData);
             closeDialog();
           },
         });
@@ -102,47 +104,60 @@ const Profile = (props) => {
     }
   };
 
-  const createConnection = async (username) => {
+  const createConnection = async (userData) => {
     try {
       setIsLoading(true);
 
-      const connectionsRef = ref("connections");
-      const newConnectionRef = connectionsRef.push();
+      const connectionsRef = ref(db, "connections");
+      const newConnectionRef = push(connectionsRef);
 
-      const isConnected = user?.connections?.[username];
+      const isConnected =
+        user?.connections?.[encodeUsername(userData?.username)];
 
-      if (!isConnected) {
-        await set(newConnectionRef, {
-          id: newConnectionRef.key,
-          user1: encodeUsername(user.username),
-          user2: encodeUsername(username),
-          timestamp: Date.now(),
+      if (isConnected) {
+        console.log("Connection already exists");
+        openDialog({
+          type: "error",
+          title: "Connection already exists",
+          content: `You are already connected with ${userData?.displayName}.`,
         });
-
-        const userConnectionsRef = ref(
-          db,
-          `users/${encodeUsername(user.username)}/connections`
-        );
-        await update(userConnectionsRef, {
-          [encodeUsername(username)]: true,
-        });
-        const userRef = ref(db, `users/${encodeUsername(user.username)}`);
-        await update(userRef, {
-          lastActive: Date.now(),
-        });
-
-        const otherUserConnectionsRef = ref(
-          db,
-          `users/${encodeUsername(username)}/connections`
-        );
-        await update(otherUserConnectionsRef, {
-          [encodeUsername(user.username)]: true,
-        });
-        const otherUserRef = ref(db, `users/${encodeUsername(username)}`);
-        await update(otherUserRef, {
-          lastActive: Date.now(),
-        });
+        setIsLoading(false);
+        return;
       }
+
+      await set(newConnectionRef, {
+        id: newConnectionRef.key,
+        user1: encodeUsername(user.username),
+        user2: encodeUsername(userData?.username),
+        timestamp: Date.now(),
+      });
+
+      const userConnectionsRef = ref(
+        db,
+        `users/${encodeUsername(user.username)}/connections`
+      );
+      await update(userConnectionsRef, {
+        [encodeUsername(userData?.username)]: true,
+      });
+      const userRef = ref(db, `users/${encodeUsername(user.username)}`);
+      await update(userRef, {
+        lastActive: Date.now(),
+      });
+
+      const otherUserConnectionsRef = ref(
+        db,
+        `users/${encodeUsername(userData?.username)}/connections`
+      );
+      await update(otherUserConnectionsRef, {
+        [encodeUsername(user.username)]: true,
+      });
+      const otherUserRef = ref(
+        db,
+        `users/${encodeUsername(userData?.username)}`
+      );
+      await update(otherUserRef, {
+        lastActive: Date.now(),
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -156,6 +171,9 @@ const Profile = (props) => {
         <Button onClick={toggleDrawer(true)}>Open</Button>
       </Box>
       {user?.username}
+      {connections.map((user, index) => (
+        <div key={index}>{user.displayName}</div>
+      ))}
       <SwipeableDrawer
         container={container}
         anchor="bottom"

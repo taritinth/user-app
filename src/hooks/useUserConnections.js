@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { getDatabase, ref, onValue, get } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  get,
+  onChildAdded,
+} from "firebase/database";
 
 import { encodeUsername } from "../utils";
 
