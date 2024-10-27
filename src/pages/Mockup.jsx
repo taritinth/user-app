@@ -11,21 +11,41 @@ import { v4 as uuidv4 } from "uuid";
 import Button from "../components/core/Button";
 import Container from "../components/core/Container";
 import { Stack } from "@mui/material";
+import { useState } from "react";
+import { useSnackbar } from "notistack";
 
 function Mockup() {
+  const { enqueueSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
+
   const clearConnections = async () => {
-    const connectionsRef = ref(db, "connections");
-    await set(connectionsRef, {});
-    console.log("Connections cleared.");
+    try {
+      setIsLoading(true);
 
-    const usersRef = ref(db, "users");
-    const usersSnapshot = await get(usersRef);
-    const users = usersSnapshot.val();
+      const connectionsRef = ref(db, "connections");
+      await set(connectionsRef, {});
+      console.log("Connections cleared.");
 
-    for (const userKey in users) {
-      const userConnectionsRef = ref(db, `users/${userKey}/connections`);
-      await set(userConnectionsRef, {});
-      console.log(`Connections for ${userKey} cleared.`);
+      const usersRef = ref(db, "users");
+      const usersSnapshot = await get(usersRef);
+      const users = usersSnapshot.val();
+
+      for (const userKey in users) {
+        const userConnectionsRef = ref(db, `users/${userKey}/connections`);
+        await set(userConnectionsRef, {});
+        console.log(`Connections for ${userKey} cleared.`);
+      }
+
+      enqueueSnackbar("Connections cleared successfully.", {
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Error clearing connections: ", error);
+      enqueueSnackbar("Error clearing connections.", {
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,6 +58,8 @@ function Mockup() {
         "https://pbs.twimg.com/profile_images/1810039515408678912/HIJv16jG_400x400.jpg";
 
       try {
+        setIsLoading(true);
+
         const uniqueFileName = `${encodeUsername(username)}.webp`;
 
         const avatarStorageRef = storageRef(
@@ -65,8 +87,17 @@ function Mockup() {
         });
 
         console.log(`User ${username} added successfully with avatar.`);
+
+        enqueueSnackbar(`User ${username} added successfully with avatar.`, {
+          variant: "success",
+        });
       } catch (error) {
         console.error("Error adding user: ", error);
+        enqueueSnackbar(`Error adding user: ${username}.`, {
+          variant: "error",
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -117,6 +148,7 @@ function Mockup() {
   // Function to add random mock connections to Firebase
   const addRandomConnections = async () => {
     try {
+      setIsLoading(true);
       // Reference to the 'connections' collection in Firebase
       const connectionsRef = ref(db, "connections");
 
@@ -191,13 +223,32 @@ function Mockup() {
         console.log(
           `New connection added between ${randomUser1} and ${randomUser2}`
         );
+
+        enqueueSnackbar(
+          `New connection added between ${randomUser1} and ${randomUser2}`,
+          {
+            variant: "success",
+          }
+        );
       } else {
         console.log(
           `Connection between ${randomUser1} and ${randomUser2} already exists.`
         );
+
+        enqueueSnackbar(
+          `Connection between ${randomUser1} and ${randomUser2} already exists.`,
+          {
+            variant: "error",
+          }
+        );
       }
     } catch (error) {
       console.error("Error retrieving connections: ", error);
+      enqueueSnackbar("Error adding random connections.", {
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -205,13 +256,25 @@ function Mockup() {
     <Container>
       {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
       <Stack spacing={2}>
-        <Button variant="contained" onClick={addRandomConnections}>
+        <Button
+          variant="contained"
+          onClick={addRandomConnections}
+          disabled={isLoading}
+        >
           Add Random Connections
         </Button>
-        <Button variant="contained" onClick={() => addGuestsToDatabase(1, 5)}>
+        <Button
+          variant="contained"
+          onClick={() => addGuestsToDatabase(1, 5)}
+          disabled={isLoading}
+        >
           Add Guests to Database
         </Button>
-        <Button variant="contained" onClick={clearConnections}>
+        <Button
+          variant="contained"
+          onClick={clearConnections}
+          disabled={isLoading}
+        >
           Clear Connections
         </Button>
       </Stack>
