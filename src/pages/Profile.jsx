@@ -235,8 +235,8 @@ const Profile = (props) => {
           </div>
         ) : connections.length > 0 ? (
           <div className="grid grid-cols-5 gap-4">
-            {connections.map((connection, index) => (
-              <Tooltip key={index} title={connection.displayName}>
+            {connections.map((connection) => (
+              <Tooltip key={connection.username} title={connection.displayName}>
                 <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md">
                   <img
                     src={connection.avatarUrl}
