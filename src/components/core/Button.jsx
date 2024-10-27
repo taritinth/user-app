@@ -1,15 +1,7 @@
 import { styled as muiStyled } from "@mui/material/styles";
 import MuiButton from "@mui/material/Button";
 
-import {
-  Primary,
-  Secondary,
-  Focused,
-  Red,
-  Grey,
-  White,
-  White01,
-} from "src/styles/color";
+import { Grey, Primary, White, White01 } from "../../styles/color";
 
 const Button = muiStyled(MuiButton, {
   shouldForwardProp: (prop) => prop !== "sx",
@@ -31,61 +23,27 @@ const Button = muiStyled(MuiButton, {
     outlineStyle: "solid",
     outlineWidth: "2px",
     outlineOffset: "0px",
-    outlineColor: Focused,
+    outlineColor: Primary,
     boxShadow: "none",
   },
   "&.MuiButton-contained": {
     backgroundColor: Primary,
     color: White,
     ":hover": {
-      backgroundColor: Red,
+      backgroundColor: Primary,
     },
     ":disabled": {
       backgroundColor: White01,
       color: Grey,
-    },
-  },
-  "&.MuiButton-secondary": {
-    backgroundColor: Secondary,
-    color: Primary,
-    ":hover": {
-      backgroundColor: Secondary,
-      color: Red,
-    },
-    ":active": {
-      backgroundColor: Secondary,
-      color: Red,
-    },
-    ":focus": {
-      backgroundColor: Secondary,
-      color: Red,
-    },
-    ":disabled": {
-      backgroundColor: White01,
-      color: Grey,
-    },
-  },
-  "&.MuiButton-outlined": {
-    border: `1px ${Primary} solid`,
-    color: Primary,
-    // backgroundColor: Secondary,
-    ":hover": {
-      color: Red,
-      backgroundColor: Secondary,
-    },
-    ":disabled": {
-      border: `1px ${Grey} solid`,
-      color: Grey,
-      backgroundColor: White01,
     },
   },
   "&.MuiButton-text": {
     color: Primary,
     ":active": {
-      color: Red,
+      color: Primary,
     },
     ":hover": {
-      color: Red,
+      color: Primary,
       backgroundColor: "transparent",
     },
     ":disabled": {

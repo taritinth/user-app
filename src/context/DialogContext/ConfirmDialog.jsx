@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 // import { useState } from "react";
 import Dialog from "../../components/core/Dialog";
-import { Button } from "@mui/material";
+import Button from "../../components/core/Button";
 
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -37,6 +37,8 @@ const ConfirmDialog = ({
   onConfirm,
   onCancel,
   maxWidth = "sm",
+  confirmButtonLabel,
+  cancelButtonLabel,
 }) => {
   // const { setLoading } = useLoading();
 
@@ -91,7 +93,8 @@ const ConfirmDialog = ({
               sx={{ minWidth: 140 }}
               onClick={onCancel}
             >
-              ยกเลิก
+              {/* Cancel */}
+              {cancelButtonLabel || "Cancel"}
             </Button>
             <Button
               variant="contained"
@@ -99,7 +102,8 @@ const ConfirmDialog = ({
               sx={{ minWidth: 140 }}
               onClick={handleConfirm}
             >
-              ยืนยัน
+              {/* OK */}
+              {confirmButtonLabel || "OK"}
             </Button>
           </>
         )}

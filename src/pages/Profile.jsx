@@ -16,10 +16,12 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { useDialog } from "../context/DialogContext";
 
-import { IconButton } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { IconButton, Skeleton } from "@mui/material";
+import { Close, QrCode, Scanner } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useLoading } from "../context/LoadingContext";
+
+import QrScanner from "../components/icons/QrScanner";
 
 const drawerBleeding = 56;
 
@@ -190,20 +192,67 @@ const Profile = (props) => {
   };
 
   return (
-    <div>
-      <Box sx={{ textAlign: "center", pt: 1 }}>
-        <Button onClick={toggleDrawer(true)}>Open</Button>
-      </Box>
-      {user?.username}
-      {isConnectionsLoading ? (
-        <div>Loading connections...</div>
-      ) : (
-        <div>
-          {connections.map((user, index) => (
-            <div key={index}>{user.displayName}</div>
-          ))}
-        </div>
-      )}
+    <div className="w-full h-screen flex flex-col items-center p-6">
+      <div className="fixed top-2 right-2 flex justify-end">
+        <IconButton
+          sx={{
+            width: 48,
+            height: 48,
+          }}
+          onClick={toggleDrawer(true)}
+        >
+          <QrScanner />
+        </IconButton>
+      </div>
+
+      <div className="flex flex-col items-center mt-[100px]">
+        <img
+          src={user.avatarUrl}
+          alt="Profile"
+          className="w-48 h-48 rounded-full shadow-lg mb-4"
+        />
+        <h1 className="text-2xl font-bold text-gray-800">{user.displayName}</h1>
+      </div>
+
+      <div className="mt-8 flex flex-col">
+        <h2 className="text-lg font-semibold text-gray-700 mb-4">
+          Connections
+        </h2>
+
+        {isConnectionsLoading ? (
+          <div className="grid grid-cols-5 gap-4">
+            {Array.from(new Array(10)).map((_, index) => (
+              <div
+                key={index}
+                className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md"
+              >
+                <Skeleton variant="circular" width={48} height={48} />
+              </div>
+            ))}
+          </div>
+        ) : connections.length > 0 ? (
+          <div className="grid grid-cols-5 gap-4">
+            {connections.map((connection, index) => (
+              <div
+                key={index}
+                className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md"
+              >
+                <img
+                  src={connection.avatarUrl}
+                  alt={connection.displayName}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-gray-500 text-left">
+            <p>You haven&apos;t connected with anyone yet.</p>
+            <p>Start meeting people to grow your network!</p>
+          </div>
+        )}
+      </div>
+
       <SwipeableDrawer
         container={container}
         anchor="bottom"

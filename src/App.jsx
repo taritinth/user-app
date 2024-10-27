@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Mockup from "./pages/Mockup";
-import Welcome from "./pages/Welcome";
 import Profile from "./pages/Profile";
 import User from "./pages/User";
+import NotFound from "./pages/NotFound"; // Import the NotFound component
 
 import DialogProvider from "./context/DialogContext";
 import LoadingProvider from "./context/LoadingContext";
@@ -16,10 +16,6 @@ const App = () => {
   const { user } = useAuth();
 
   const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Welcome />,
-    },
     {
       path: "/profile",
       element: (
@@ -39,6 +35,10 @@ const App = () => {
     {
       path: "/u/:username",
       element: <User />,
+    },
+    {
+      path: "*", // This will match any route that is not defined above
+      element: <NotFound />, // Render the NotFound component
     },
   ]);
 

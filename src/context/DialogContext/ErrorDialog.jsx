@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import Dialog from "../../components/core/Dialog";
-import { Button } from "@mui/material";
+import Button from "../../components/core/Button";
 
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -103,7 +103,7 @@ const ErrorDialog = ({
               sx={{ minWidth: 140 }}
               onClick={onClose}
             >
-              ปิด
+              Close
             </Button>
           </>
         )}

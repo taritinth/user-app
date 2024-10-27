@@ -9,7 +9,9 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 import { useDialog } from "../context/DialogContext";
-import { Button } from "@mui/material";
+import Button from "../components/core/Button";
+
+import Container from "../components/core/Container";
 
 const User = () => {
   const { openDialog, closeDialog } = useDialog();
@@ -46,7 +48,7 @@ const User = () => {
   const handleSignIn = async () => {
     openDialog({
       type: "confirm",
-      title: `Would you like to join the activity as ${user.displayName}?`,
+      title: `Are you sure this is your profile, ${user?.displayName}?`,
       onConfirm: async () => {
         closeDialog();
 
@@ -57,6 +59,8 @@ const User = () => {
         navigate("/profile");
         window.location.reload();
       },
+      confirmButtonLabel: "Yes, It's Me",
+      cancelButtonLabel: "No",
     });
   };
 
@@ -66,29 +70,39 @@ const User = () => {
   }, [username]);
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center p-6">
+    <Container>
       {!isLoading &&
         (user ? (
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="flex flex-col items-center">
+            <img
+              src={user?.avatarUrl}
+              alt="User Profile Picture"
+              className="w-48 h-48 rounded-full mb-6"
+            />
+
+            <h1 className="text-center text-2xl font-bold text-gray-800 mb-2">
               👋 Welcome, {user?.displayName}!
             </h1>
-            <p className="text-gray-600 mb-6">
-              We&apos;re excited to have you join us, {user?.displayName}! Ready
-              to dive in?
+
+            <p className="text-center text-gray-600 mb-6 max-w-xs">
+              We&apos;re excited to have you join us! Ready to dive in?
             </p>
 
-            <p className="text-gray-500 mb-6">
+            <p className="text-center text-gray-500 mb-6 max-w-xs">
               Your profile is set up and looking great! When you&apos;re ready,
               just hit the button below to start connecting with the community.
             </p>
 
-            <button
+            <Button
+              sx={{
+                mt: 2,
+              }}
+              variant="contained"
+              size="large"
               onClick={handleSignIn}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               Let&apos;s Go!
-            </button>
+            </Button>
             {/* <h1>{user.displayName}</h1>
             <Button variant="contained" onClick={handleSignIn}>
               Join
@@ -109,7 +123,7 @@ const User = () => {
             </p>
           </div>
         ))}
-    </div>
+    </Container>
   );
 };
 
