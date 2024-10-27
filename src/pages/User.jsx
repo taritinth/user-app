@@ -66,17 +66,48 @@ const User = () => {
   }, [username]);
 
   return (
-    <div>
+    <div className="w-full h-screen flex flex-col items-center justify-center p-6">
       {!isLoading &&
         (user ? (
           <div>
-            <h1>{user.displayName}</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              👋 Welcome, {user?.displayName}!
+            </h1>
+            <p className="text-gray-600 mb-6">
+              We&apos;re excited to have you join us, {user?.displayName}! Ready
+              to dive in?
+            </p>
+
+            <p className="text-gray-500 mb-6">
+              Your profile is set up and looking great! When you&apos;re ready,
+              just hit the button below to start connecting with the community.
+            </p>
+
+            <button
+              onClick={handleSignIn}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              Let&apos;s Go!
+            </button>
+            {/* <h1>{user.displayName}</h1>
             <Button variant="contained" onClick={handleSignIn}>
               Join
-            </Button>
+            </Button> */}
           </div>
         ) : (
-          <div>Not found</div>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              User Not Found
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Oops! We couldn&apos;t locate the profile you&apos;re looking for.
+            </p>
+
+            <p className="text-gray-500 mb-6">
+              It might be a typo in the link, or the user profile doesn&apos;t
+              exist. Please double-check or try again.
+            </p>
+          </div>
         ))}
     </div>
   );

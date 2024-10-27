@@ -46,7 +46,9 @@ const App = () => {
     <>
       <LoadingProvider>
         <DialogProvider>
-          <RouterProvider router={router} />
+          <div className="min-h-screen flex flex-col">
+            <RouterProvider router={router} />
+          </div>
         </DialogProvider>
       </LoadingProvider>
     </>

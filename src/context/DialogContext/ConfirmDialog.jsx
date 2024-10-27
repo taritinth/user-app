@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 // import { useState } from "react";
-import { Dialog } from "@mui/material";
+import Dialog from "../../components/core/Dialog";
 import { Button } from "@mui/material";
 
 import DialogContent from "@mui/material/DialogContent";
