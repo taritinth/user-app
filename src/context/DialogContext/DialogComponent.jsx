@@ -18,8 +18,8 @@ const DialogComponent = ({ dialog }) => {
       closeDialog(dialogId);
     },
     // defaultConfirmProps
-    confirmButtonLabel = "ยืนยัน",
-    cancelButtonLabel = "ยกเลิก",
+    confirmButtonLabel = "OK",
+    cancelButtonLabel = "Cancel",
     onConfirm = () => {},
     onCancel = () => {
       closeDialog(dialogId);

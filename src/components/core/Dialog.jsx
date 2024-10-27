@@ -11,7 +11,7 @@ const Dialog = muiStyled(MuiDialog)(({ theme }) => ({
   },
   "& .MuiDialogActions-root": {
     padding: theme.spacing(3),
-    // paddingTop: 0,
+    paddingTop: 0,
   },
 }));
 

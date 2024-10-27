@@ -93,8 +93,7 @@ const ConfirmDialog = ({
               sx={{ minWidth: 140 }}
               onClick={onCancel}
             >
-              {/* Cancel */}
-              {cancelButtonLabel || "Cancel"}
+              {cancelButtonLabel}
             </Button>
             <Button
               variant="contained"
@@ -103,7 +102,7 @@ const ConfirmDialog = ({
               onClick={handleConfirm}
             >
               {/* OK */}
-              {confirmButtonLabel || "OK"}
+              {confirmButtonLabel}
             </Button>
           </>
         )}
