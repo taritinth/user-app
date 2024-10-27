@@ -9,15 +9,14 @@ import QRScanner from "../components/QRScanner";
 
 import { styled } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { useDialog } from "../context/DialogContext";
 
 import { IconButton, Skeleton } from "@mui/material";
-import { Close, QrCode, Scanner } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useLoading } from "../context/LoadingContext";
 

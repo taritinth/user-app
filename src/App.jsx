@@ -27,7 +27,7 @@ const App = () => {
     {
       path: "/mockup",
       element: (
-        <ProtectedRoute isAllowed={true}>
+        <ProtectedRoute isAllowed={user?.username === "0xh3x"}>
           <Mockup />
         </ProtectedRoute>
       ),

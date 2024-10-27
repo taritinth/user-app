@@ -8,6 +8,10 @@ import {
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
+import Button from "../components/core/Button";
+import Container from "../components/core/Container";
+import { Stack } from "@mui/material";
+
 function Mockup() {
   const clearConnections = async () => {
     const connectionsRef = ref(db, "connections");
@@ -198,16 +202,20 @@ function Mockup() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2">
+    <Container>
       {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
-      <button onClick={addRandomConnections}>Add Random Connections</button>
-      <button onClick={() => addGuestsToDatabase(1, 5)}>
-        Add Guests to Database
-      </button>
-      <button onClick={clearConnections} className="bg-red-500 text-white">
-        Clear Connections
-      </button>
-    </div>
+      <Stack spacing={2}>
+        <Button variant="contained" onClick={addRandomConnections}>
+          Add Random Connections
+        </Button>
+        <Button variant="contained" onClick={() => addGuestsToDatabase(1, 5)}>
+          Add Guests to Database
+        </Button>
+        <Button variant="contained" onClick={clearConnections}>
+          Clear Connections
+        </Button>
+      </Stack>
+    </Container>
   );
 }
 
