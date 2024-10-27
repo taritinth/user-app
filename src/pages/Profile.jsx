@@ -23,6 +23,8 @@ import { useLoading } from "../context/LoadingContext";
 
 import QrScanner from "../components/icons/QrScanner";
 
+import Tooltip from "@mui/material/Tooltip";
+
 const drawerBleeding = 56;
 
 const StyledBox = styled("div")(({ theme }) => ({
@@ -233,16 +235,15 @@ const Profile = (props) => {
         ) : connections.length > 0 ? (
           <div className="grid grid-cols-5 gap-4">
             {connections.map((connection, index) => (
-              <div
-                key={index}
-                className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md"
-              >
-                <img
-                  src={connection.avatarUrl}
-                  alt={connection.displayName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <Tooltip key={index} title={connection.displayName}>
+                <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md">
+                  <img
+                    src={connection.avatarUrl}
+                    alt={connection.displayName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Tooltip>
             ))}
           </div>
         ) : (
