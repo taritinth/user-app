@@ -106,6 +106,8 @@ const Profile = (props) => {
             createConnection(userData);
             closeDialog();
           },
+          confirmButtonLabel: "Yes",
+          cancelButtonLabel: "No",
         });
       } else {
         setIsNotFound(true);
