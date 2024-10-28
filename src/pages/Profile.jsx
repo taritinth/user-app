@@ -286,7 +286,13 @@ const Profile = (props) => {
             alignItems: "center",
           }}
         >
-          <div></div> {/* Empty div to align the title */}
+          <div
+            style={{
+              width: 48,
+              height: 48,
+            }}
+          ></div>{" "}
+          {/* Empty div to align the title */}
           <Typography sx={{ p: 2, color: "text.secondary", fontWeight: 500 }}>
             Scan QR Code
           </Typography>
