@@ -19,6 +19,7 @@ import { IconButton, Skeleton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useLoading } from "../context/LoadingContext";
+import { useSnackbar } from "notistack";
 
 import QrScanner from "../components/icons/QrScanner";
 
@@ -39,15 +40,13 @@ const Profile = (props) => {
   const { user } = useAuth();
   const { openDialog, closeDialog } = useDialog();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { connections, isLoading: isConnectionsLoading } = useUserConnections(
     user?.username
   );
 
   const { isLoading, setIsLoading } = useLoading();
-
-  console.log("connections", connections);
-
-  // const [user, setUser] = useState(null);
 
   const [open, setOpen] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
@@ -154,11 +153,13 @@ const Profile = (props) => {
       const connectionsRef = ref(db, "connections");
       const newConnectionRef = push(connectionsRef);
 
+      const currentTimestamp = Date.now();
+
       await set(newConnectionRef, {
         id: newConnectionRef.key,
         user1: encodeUsername(user.username),
         user2: encodeUsername(userData?.username),
-        timestamp: Date.now(),
+        timestamp: currentTimestamp,
       });
 
       const userConnectionsRef = ref(
@@ -170,7 +171,7 @@ const Profile = (props) => {
       });
       const userRef = ref(db, `users/${encodeUsername(user.username)}`);
       await update(userRef, {
-        lastActive: Date.now(),
+        lastActive: currentTimestamp,
       });
 
       const otherUserConnectionsRef = ref(
@@ -185,7 +186,11 @@ const Profile = (props) => {
         `users/${encodeUsername(userData?.username)}`
       );
       await update(otherUserRef, {
-        lastActive: Date.now(),
+        lastActive: currentTimestamp,
+      });
+
+      enqueueSnackbar(`You are now connected with ${userData?.displayName}!`, {
+        variant: "success",
       });
     } catch (err) {
       console.error(err);

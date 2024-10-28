@@ -188,12 +188,14 @@ function Mockup() {
       if (!connectionExists(randomUser1, randomUser2)) {
         const newConnectionRef = push(connectionsRef);
 
+        const currentTimestamp = Date.now();
+
         // Add the new connection to Firebase with a timestamp
         await set(newConnectionRef, {
           id: newConnectionRef.key,
           user1: randomUser1,
           user2: randomUser2,
-          timestamp: Date.now(), // Unix timestamp of when the connection was made
+          timestamp: currentTimestamp, // Unix timestamp of when the connection was made
         });
 
         const userConnectionsRef = ref(db, `users/${randomUser1}/connections`);
@@ -204,7 +206,7 @@ function Mockup() {
 
         const userRef = ref(db, `users/${randomUser1}`);
         await update(userRef, {
-          lastActive: Date.now(),
+          lastActive: currentTimestamp,
         });
 
         const otherUserConnectionsRef = ref(
@@ -217,7 +219,7 @@ function Mockup() {
 
         const otherUserRef = ref(db, `users/${randomUser2}`);
         await update(otherUserRef, {
-          lastActive: Date.now(),
+          lastActive: currentTimestamp,
         });
 
         console.log(
