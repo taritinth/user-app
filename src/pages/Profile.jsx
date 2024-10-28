@@ -241,7 +241,11 @@ const Profile = (props) => {
         ) : connections.length > 0 ? (
           <div className="grid grid-cols-5 gap-4">
             {connections.map((connection) => (
-              <Tooltip key={connection.username} title={connection.displayName}>
+              <Tooltip
+                key={connection.username}
+                title={connection.displayName}
+                enterTouchDelay={0}
+              >
                 <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shadow-md">
                   <img
                     src={connection.avatarUrl}
