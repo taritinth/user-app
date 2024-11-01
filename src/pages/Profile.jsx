@@ -130,6 +130,21 @@ const Profile = (props) => {
     try {
       setIsLoading(true);
 
+      // Check if connections are enabled
+      const connectionsEnabledRef = ref(db, "config/connectionsEnabled");
+      const connectionsEnabledSnapshot = await get(connectionsEnabledRef);
+      const connectionsEnabled = connectionsEnabledSnapshot.val();
+
+      if (!connectionsEnabled) {
+        openDialog({
+          type: "error",
+          title: "Connections Disabled",
+          content: "Connections cannot be made at this time.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const userConnectedRef = ref(
         db,
         `users/${encodeUsername(user.username)}/connections/${encodeUsername(
