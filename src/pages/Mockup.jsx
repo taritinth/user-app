@@ -10,13 +10,48 @@ import { v4 as uuidv4 } from "uuid";
 
 import Button from "../components/core/Button";
 import Container from "../components/core/Container";
-import { Stack } from "@mui/material";
-import { useState } from "react";
+import { Stack, Switch, FormControlLabel } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 
 function Mockup() {
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnectionEnabled, setIsConnectionEnabled] = useState(false); // State to hold connection status
+
+  // Fetch connection status when component mounts
+  useEffect(() => {
+    const fetchConnectionStatus = async () => {
+      const connectionsEnabledRef = ref(db, "config/connectionsEnabled");
+      const connectionsEnabledSnapshot = await get(connectionsEnabledRef);
+      setIsConnectionEnabled(connectionsEnabledSnapshot.val());
+    };
+
+    fetchConnectionStatus();
+  }, []);
+
+  // Function to toggle connection status
+  const toggleConnectionStatus = async () => {
+    try {
+      setIsLoading(true);
+      const connectionsEnabledRef = ref(db, "config/connectionsEnabled");
+      await set(connectionsEnabledRef, !isConnectionEnabled);
+      setIsConnectionEnabled(!isConnectionEnabled);
+      enqueueSnackbar(
+        `Connections ${!isConnectionEnabled ? "enabled" : "disabled"}.`,
+        {
+          variant: "success",
+        }
+      );
+    } catch (error) {
+      console.error("Error toggling connection status: ", error);
+      enqueueSnackbar("Error toggling connection status.", {
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const clearConnections = async () => {
     try {
@@ -258,6 +293,16 @@ function Mockup() {
     <Container>
       {/* <button onClick={addUsersToDatabase}>Add Users to Database</button> */}
       <Stack spacing={2}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isConnectionEnabled}
+              onChange={toggleConnectionStatus}
+              disabled={isLoading}
+            />
+          }
+          label="Enable Connections"
+        />
         <Button
           variant="contained"
           onClick={addRandomConnections}
