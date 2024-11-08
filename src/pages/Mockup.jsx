@@ -13,8 +13,11 @@ import Container from "../components/core/Container";
 import { Stack, Switch, FormControlLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
+import { useDialog } from "../context/DialogContext";
 
 function Mockup() {
+  const { openDialog } = useDialog();
+
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
   const [isConnectionEnabled, setIsConnectionEnabled] = useState(false); // State to hold connection status
@@ -184,6 +187,22 @@ function Mockup() {
   const addRandomConnections = async () => {
     try {
       setIsLoading(true);
+
+      // Check if connections are enabled
+      const connectionsEnabledRef = ref(db, "config/connectionsEnabled");
+      const connectionsEnabledSnapshot = await get(connectionsEnabledRef);
+      const connectionsEnabled = connectionsEnabledSnapshot.val();
+
+      if (!connectionsEnabled) {
+        openDialog({
+          type: "error",
+          title: "Connections Disabled",
+          content: "Connections cannot be made at this time.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       // Reference to the 'connections' collection in Firebase
       const connectionsRef = ref(db, "connections");
 
