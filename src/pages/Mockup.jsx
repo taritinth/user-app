@@ -64,6 +64,11 @@ function Mockup() {
       await set(connectionsRef, {});
       console.log("Connections cleared.");
 
+      // Clear node positions
+      const nodesRef = ref(db, "nodePositions");
+      await set(nodesRef, {});
+      console.log("Node positions cleared.");
+
       const usersRef = ref(db, "users");
       const usersSnapshot = await get(usersRef);
       const users = usersSnapshot.val();
