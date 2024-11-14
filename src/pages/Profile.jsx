@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { ref, get, set, update, push } from "firebase/database";
 import useUserConnections from "../hooks/useUserConnections";
@@ -15,8 +15,10 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { useDialog } from "../context/DialogContext";
 
+import Button from "../components/core/Button";
 import { IconButton, Skeleton } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Close, Download } from "@mui/icons-material";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useAuth } from "../context/AuthContext";
 import { useLoading } from "../context/LoadingContext";
 import { useSnackbar } from "notistack";
@@ -24,6 +26,7 @@ import { useSnackbar } from "notistack";
 import QrScanner from "../components/icons/QrScanner";
 
 import Tooltip from "@mui/material/Tooltip";
+import DialogPostcard from "./DialogPostcard";
 
 const drawerBleeding = 56;
 
@@ -45,11 +48,30 @@ const Profile = (props) => {
   const { connections, isLoading: isConnectionsLoading } = useUserConnections(
     user?.username
   );
+  const [isAvailableToDownloadPostcard, setIsAvailableToDownloadPostcard] =
+    useState(false);
 
   const { isLoading, setIsLoading } = useLoading();
 
   const [open, setOpen] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
+
+  useEffect(() => {
+    const fetchAvailableToDownloadPostcard = async () => {
+      const availableToDownloadPostcardRef = ref(
+        db,
+        "config/availableToDownloadPostcard"
+      );
+      const availableToDownloadPostcardSnapshot = await get(
+        availableToDownloadPostcardRef
+      );
+      setIsAvailableToDownloadPostcard(
+        availableToDownloadPostcardSnapshot.val()
+      );
+    };
+
+    fetchAvailableToDownloadPostcard();
+  }, []);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -165,6 +187,16 @@ const Profile = (props) => {
         return;
       }
 
+      if (!userData.displayName || !userData.avatarUrl) {
+        openDialog({
+          type: "error",
+          title: "User data incomplete",
+          content: `Please ask ${userData?.displayName} to update their profile.`,
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const connectionsRef = ref(db, "connections");
       const newConnectionRef = push(connectionsRef);
 
@@ -238,9 +270,39 @@ const Profile = (props) => {
       </div>
 
       <div className="mt-8 flex flex-col">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">
-          Connections
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-700">
+            Connections ({connections.length})
+          </h2>
+          <Button
+            variant="contained"
+            startIcon={<MailOutlineIcon />}
+            onClick={() => {
+              if (!isAvailableToDownloadPostcard) {
+                openDialog({
+                  type: "error",
+                  title: "Postcard not available",
+                  content:
+                    "Digital postcard will be available in 2-3 days after the event",
+                });
+              } else {
+                openDialog({
+                  type: "custom",
+                  customDialog: (
+                    <DialogPostcard
+                      onClose={() => {
+                        closeDialog();
+                      }}
+                    />
+                  ),
+                });
+              }
+            }}
+            disabled={isLoading}
+          >
+            Get postcard!
+          </Button>
+        </div>
 
         {isConnectionsLoading ? (
           <div className="grid grid-cols-5 gap-4">

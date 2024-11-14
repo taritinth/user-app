@@ -3,7 +3,11 @@ import MuiDialog from "@mui/material/Dialog";
 
 const Dialog = muiStyled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    borderRadius: 32,
+    borderRadius: 16,
+  },
+  "& .MuiDialogTitle-root": {
+    padding: theme.spacing(3),
+    paddingBottom: 0,
   },
   "& .MuiDialogContent-root": {
     padding: theme.spacing(3),

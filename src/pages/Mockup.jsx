@@ -14,6 +14,7 @@ import { Stack, Switch, FormControlLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { useDialog } from "../context/DialogContext";
+import { Red } from "../styles/color";
 
 function Mockup() {
   const { openDialog } = useDialog();
@@ -21,6 +22,11 @@ function Mockup() {
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
   const [isConnectionEnabled, setIsConnectionEnabled] = useState(false); // State to hold connection status
+  const [isAvailableToDownloadPostcard, setIsAvailableToDownloadPostcard] =
+    useState(false);
+
+  const [guestStart, setGuestStart] = useState(1);
+  const [guestEnd, setGuestEnd] = useState(96);
 
   // Fetch connection status when component mounts
   useEffect(() => {
@@ -31,6 +37,23 @@ function Mockup() {
     };
 
     fetchConnectionStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchAvailableToDownloadPostcard = async () => {
+      const availableToDownloadPostcardRef = ref(
+        db,
+        "config/availableToDownloadPostcard"
+      );
+      const availableToDownloadPostcardSnapshot = await get(
+        availableToDownloadPostcardRef
+      );
+      setIsAvailableToDownloadPostcard(
+        availableToDownloadPostcardSnapshot.val()
+      );
+    };
+
+    fetchAvailableToDownloadPostcard();
   }, []);
 
   // Function to toggle connection status
@@ -49,6 +72,36 @@ function Mockup() {
     } catch (error) {
       console.error("Error toggling connection status: ", error);
       enqueueSnackbar("Error toggling connection status.", {
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleAvailableToDownloadPostcard = async () => {
+    try {
+      setIsLoading(true);
+      const availableToDownloadPostcardRef = ref(
+        db,
+        "config/availableToDownloadPostcard"
+      );
+      await set(availableToDownloadPostcardRef, !isAvailableToDownloadPostcard);
+      setIsAvailableToDownloadPostcard(!isAvailableToDownloadPostcard);
+      enqueueSnackbar(
+        `Available to download postcard ${
+          !isAvailableToDownloadPostcard ? "enabled" : "disabled"
+        }.`,
+        {
+          variant: "success",
+        }
+      );
+    } catch (error) {
+      console.error(
+        "Error toggling available to download postcard status: ",
+        error
+      );
+      enqueueSnackbar("Error toggling available to download postcard status.", {
         variant: "error",
       });
     } finally {
@@ -95,36 +148,36 @@ function Mockup() {
   // Add guests to the database e.g. guest1, guest2, etc.
   const addGuestsToDatabase = async (from, to) => {
     for (let i = from; i <= to; i++) {
-      const username = `guest${i}`;
-      const displayName = `Guest ${i}`;
-      const avatarUrl =
-        "https://pbs.twimg.com/profile_images/1810039515408678912/HIJv16jG_400x400.jpg";
+      const username = `guest${i?.toString()?.padStart(3, "0")}`;
+      // const displayName = `Guest ${i}`;
+      // const avatarUrl =
+      //   "https://pbs.twimg.com/profile_images/1810039515408678912/HIJv16jG_400x400.jpg";
 
       try {
         setIsLoading(true);
 
-        const uniqueFileName = `${encodeUsername(username)}.webp`;
+        // const uniqueFileName = `${encodeUsername(username)}.webp`;
 
-        const avatarStorageRef = storageRef(
-          storage,
-          `avatars/${uniqueFileName}`
-        );
-        const avatarResponse = await fetch(avatarUrl);
-        const avatarBlob = await avatarResponse.blob();
+        // const avatarStorageRef = storageRef(
+        //   storage,
+        //   `avatars/${uniqueFileName}`
+        // );
+        // const avatarResponse = await fetch(avatarUrl);
+        // const avatarBlob = await avatarResponse.blob();
 
-        await uploadBytes(avatarStorageRef, avatarBlob, {
-          cacheControl: "public,max-age=31536000",
-        });
+        // await uploadBytes(avatarStorageRef, avatarBlob, {
+        //   cacheControl: "public,max-age=31536000",
+        // });
 
-        const avatarDownloadUrl = await getDownloadURL(avatarStorageRef);
+        // const avatarDownloadUrl = await getDownloadURL(avatarStorageRef);
 
         const usersRef = ref(db, `users/${encodeUsername(username)}`);
 
         await set(usersRef, {
           userId: uuidv4(),
           username,
-          displayName,
-          avatarUrl: avatarDownloadUrl,
+          displayName: "",
+          avatarUrl: "",
           connections: {},
           lastActive: Date.now(),
         });
@@ -327,6 +380,23 @@ function Mockup() {
           }
           label="Enable Connections"
         />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isAvailableToDownloadPostcard}
+              onChange={toggleAvailableToDownloadPostcard}
+              disabled={isLoading}
+            />
+          }
+          label="Available to Download Postcard"
+        />
+        <Button
+          variant="contained"
+          onClick={addRandomConnections}
+          disabled={isLoading}
+        >
+          Scan QR
+        </Button>
         <Button
           variant="contained"
           onClick={addRandomConnections}
@@ -334,16 +404,44 @@ function Mockup() {
         >
           Add Random Connections
         </Button>
+
+        <input
+          type="number"
+          value={guestStart}
+          onChange={(e) => setGuestStart(e.target.value)}
+        />
+        <input
+          type="number"
+          value={guestEnd}
+          onChange={(e) => setGuestEnd(e.target.value)}
+        />
+
         <Button
           variant="contained"
-          onClick={() => addGuestsToDatabase(1, 5)}
+          // onClick={() => addGuestsToDatabase(guestStart, guestEnd)}
+          onClick={() => {
+            openDialog({
+              type: "confirm",
+              title: "Add Guests to Database",
+              content: `Are you sure you want to add guests ${guestStart} to ${guestEnd} to the database?`,
+              onConfirm: () => addGuestsToDatabase(guestStart, guestEnd),
+            });
+          }}
           disabled={isLoading}
         >
           Add Guests to Database
         </Button>
         <Button
           variant="contained"
-          onClick={clearConnections}
+          // onClick={clearConnections}
+          onClick={() => {
+            openDialog({
+              type: "confirm",
+              title: "Clear Connections",
+              content: "Are you sure you want to clear all connections?",
+              onConfirm: clearConnections,
+            });
+          }}
           disabled={isLoading}
         >
           Clear Connections
