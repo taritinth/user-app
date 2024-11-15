@@ -7,5 +7,5 @@ export default defineConfig({
   plugins: [
     react(),
     pluginRewriteAll(), // <= add the new plugin
-  ],
+  ], // redeploy
 });
