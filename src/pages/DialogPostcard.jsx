@@ -204,6 +204,7 @@ const DialogPostcard = ({ data, onClose }) => {
                   style={{
                     lineHeight: 1,
                     marginTop: "2px",
+                    width: "471px",
                   }}
                 >
                   {data.displayName}
