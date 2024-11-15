@@ -56,9 +56,12 @@ function Mockup() {
 
   useEffect(() => {
     const fetchGuestRegistrationStatus = async () => {
+      setIsLoading(true);
+
       const guestRegistrationRef = ref(db, "config/guestRegistrationEnabled");
       const guestRegistrationSnapshot = await get(guestRegistrationRef);
       setIsGuestRegistrationEnabled(guestRegistrationSnapshot.val());
+      setIsLoading(false);
     };
 
     fetchGuestRegistrationStatus();
@@ -67,9 +70,11 @@ function Mockup() {
   // Fetch connection status when component mounts
   useEffect(() => {
     const fetchConnectionStatus = async () => {
+      setIsLoading(true);
       const connectionsEnabledRef = ref(db, "config/connectionsEnabled");
       const connectionsEnabledSnapshot = await get(connectionsEnabledRef);
       setIsConnectionEnabled(connectionsEnabledSnapshot.val());
+      setIsLoading(false);
     };
 
     fetchConnectionStatus();
@@ -485,11 +490,13 @@ function Mockup() {
           type="number"
           value={guestStart}
           onChange={(e) => setGuestStart(e.target.value)}
+          disabled={isLoading}
         />
         <input
           type="number"
           value={guestEnd}
           onChange={(e) => setGuestEnd(e.target.value)}
+          disabled={isLoading}
         />
 
         <Button
