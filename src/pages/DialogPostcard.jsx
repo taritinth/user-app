@@ -232,7 +232,7 @@ const DialogPostcard = ({ data, onClose }) => {
                   gap: "10px",
                 }}
               >
-                {data.connections.map((user, index) => (
+                {data.connections.slice(0, 29).map((user, index) => (
                   <img
                     key={index}
                     src={user.avatarUrl}
@@ -242,6 +242,11 @@ const DialogPostcard = ({ data, onClose }) => {
                     //   crossOrigin="anonymous"
                   />
                 ))}
+                {data.connections.length > 29 && (
+                  <span className="text-gray-500">
+                    +{data.connections.length - 29}
+                  </span>
+                )}
               </div>
             </div>
             <div className="self-center mt-auto">
