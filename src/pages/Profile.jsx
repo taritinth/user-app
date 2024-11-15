@@ -119,6 +119,15 @@ const Profile = (props) => {
       // Close QR Scanner & Open confirmation dialog
       if (userData) {
         toggleDrawer(false)();
+        if (!userData.displayName || !userData.avatarUrl) {
+          openDialog({
+            type: "error",
+            title: "User data incomplete",
+            content: `Please ask ${userData?.displayName} to update their profile.`,
+          });
+          return;
+        }
+
         openDialog({
           type: "confirm",
           title: `Would you like to connect with ${userData.displayName}?`,
@@ -182,16 +191,6 @@ const Profile = (props) => {
           type: "error",
           title: "Connection already exists",
           content: `You are already connected with ${userData?.displayName}.`,
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      if (!userData.displayName || !userData.avatarUrl) {
-        openDialog({
-          type: "error",
-          title: "User data incomplete",
-          content: `Please ask ${userData?.displayName} to update their profile.`,
         });
         setIsLoading(false);
         return;

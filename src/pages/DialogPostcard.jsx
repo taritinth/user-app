@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import Copyright from "../components/icons/Copyright";
+// import Copyright from "../components/icons/Copyright";
 import HighFive from "../components/icons/HighFive";
 
 const DialogPostcard = ({ onClose }) => {
@@ -209,7 +209,11 @@ const DialogPostcard = ({ onClose }) => {
               </div>
             </div>
             <div className="self-center mt-auto">
-              <Copyright />
+              <img
+                src="copyright.png"
+                className="w-[263px] h-[27px]"
+                alt="Copyright"
+              />
             </div>
           </div>
         </div>
