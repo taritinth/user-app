@@ -17,7 +17,7 @@ import { useDialog } from "../context/DialogContext";
 import { Red } from "../styles/color";
 
 function Mockup() {
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
 
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
@@ -332,6 +332,32 @@ function Mockup() {
         );
       }
 
+      // Check user profile incomplete
+      const user1DisplayName = users.find(
+        (user) => encodeUsername(user.username) === randomUser1
+      )?.displayName;
+
+      const user2DisplayName = users.find(
+        (user) => encodeUsername(user.username) === randomUser2
+      )?.displayName;
+
+      console.log("user1DisplayName", user1DisplayName);
+      console.log("user2DisplayName", user2DisplayName);
+
+      if (!user1DisplayName || !user2DisplayName) {
+        setIsLoading(false);
+        openDialog({
+          type: "error",
+          title: "User data incomplete",
+          content: `Please ask ${randomUser1} or ${randomUser2} to update their profile.`,
+          onClose: () => {
+            setIsLoading(false);
+            closeDialog();
+          },
+        });
+        return;
+      }
+
       // Check if the connection between these two users already exists
       if (!connectionExists(randomUser1, randomUser2)) {
         const newConnectionRef = push(connectionsRef);
@@ -349,7 +375,9 @@ function Mockup() {
         const userConnectionsRef = ref(db, `users/${randomUser1}/connections`);
 
         await update(userConnectionsRef, {
-          [randomUser2]: true,
+          [randomUser2]: {
+            timestamp: currentTimestamp,
+          },
         });
 
         const userRef = ref(db, `users/${randomUser1}`);
@@ -362,7 +390,9 @@ function Mockup() {
           `users/${randomUser2}/connections`
         );
         await update(otherUserConnectionsRef, {
-          [randomUser1]: true,
+          [randomUser1]: {
+            timestamp: currentTimestamp,
+          },
         });
 
         const otherUserRef = ref(db, `users/${randomUser2}`);

@@ -24,16 +24,27 @@ const useUserConnections = (username) => {
 
       const unsubscribe = onValue(userConnectionsRef, (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-          const connections = Object.keys(data).map(async (key) => {
-            const connectionRef = ref(db, `users/${key}`);
-            const connectionSnapshot = await get(connectionRef);
-            const connectionData = connectionSnapshot.val();
 
-            return {
-              ...connectionData,
-            };
-          });
+        if (data) {
+          const sortedConnectionsByTimestamp = Object.entries(data).sort(
+            (a, b) => a[1].timestamp - b[1].timestamp
+          );
+          console.log(
+            "sortedConnectionsByTimestamp",
+            sortedConnectionsByTimestamp
+          );
+
+          const connections = sortedConnectionsByTimestamp.map(
+            async ([key]) => {
+              const connectionRef = ref(db, `users/${key}`);
+              const connectionSnapshot = await get(connectionRef);
+              const connectionData = connectionSnapshot.val();
+
+              return {
+                ...connectionData,
+              };
+            }
+          );
 
           Promise.all(connections).then((connections) => {
             setConnections(connections);

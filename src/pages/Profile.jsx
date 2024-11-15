@@ -218,7 +218,9 @@ const Profile = (props) => {
         `users/${encodeUsername(user.username)}/connections`
       );
       await update(userConnectionsRef, {
-        [encodeUsername(userData?.username)]: true,
+        [encodeUsername(userData?.username)]: {
+          timestamp: currentTimestamp,
+        },
       });
       const userRef = ref(db, `users/${encodeUsername(user.username)}`);
       await update(userRef, {
@@ -230,7 +232,9 @@ const Profile = (props) => {
         `users/${encodeUsername(userData?.username)}/connections`
       );
       await update(otherUserConnectionsRef, {
-        [encodeUsername(user.username)]: true,
+        [encodeUsername(user.username)]: {
+          timestamp: currentTimestamp,
+        },
       });
       const otherUserRef = ref(
         db,
