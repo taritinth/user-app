@@ -45,9 +45,11 @@ const Profile = (props) => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { connections, isLoading: isConnectionsLoading } = useUserConnections(
-    user?.username
-  );
+  const {
+    connections,
+    rank,
+    isLoading: isConnectionsLoading,
+  } = useUserConnections(user?.username);
   const [isAvailableToDownloadPostcard, setIsAvailableToDownloadPostcard] =
     useState(false);
 
@@ -269,11 +271,19 @@ const Profile = (props) => {
       </div>
 
       <div className="flex flex-col items-center mt-[100px]">
-        <img
-          src={user.avatarUrl}
-          alt="Profile"
-          className="w-48 h-48 rounded-full shadow-lg mb-4"
-        />
+        <div className="relative mb-4">
+          <img
+            src={user.avatarUrl}
+            alt="Profile"
+            className="w-48 h-48 rounded-full shadow-lg"
+          />
+          {rank > 0 && (
+            <span className="absolute bottom-1 right-1 h-8 w-10 font-bold border-2 border-gray-300 rounded-full p-2 flex justify-center items-center bg-white">
+              {rank}
+            </span>
+          )}
+        </div>
+
         <h1 className="text-2xl font-bold text-gray-800">{user.displayName}</h1>
       </div>
 
@@ -294,10 +304,34 @@ const Profile = (props) => {
                     "Digital postcard will be available in 2-3 days after the event",
                 });
               } else {
+                if (connections.length === 0) {
+                  openDialog({
+                    type: "error",
+                    title: "No connections",
+                    content:
+                      "You need to connect with someone to get a postcard",
+                  });
+                  return;
+                }
+
+                const data = {
+                  total: connections.length,
+                  rank,
+                  displayName: user.displayName,
+                  avatarUrl: `${user.avatarUrl}&v=${new Date().getTime()}`,
+                  connections: connections.map((connection) => ({
+                    displayName: connection.displayName,
+                    avatarUrl: `${
+                      connection.avatarUrl
+                    }&v=${new Date().getTime()}`,
+                  })),
+                };
+
                 openDialog({
                   type: "custom",
                   customDialog: (
                     <DialogPostcard
+                      data={data}
                       onClose={() => {
                         closeDialog();
                       }}

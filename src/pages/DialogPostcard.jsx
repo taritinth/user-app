@@ -12,19 +12,35 @@ import { Close } from "@mui/icons-material";
 // import Copyright from "../components/icons/Copyright";
 import HighFive from "../components/icons/HighFive";
 
-const DialogPostcard = ({ onClose }) => {
+const getRankingIconSize = (index) => {
+  switch (index) {
+    case 0:
+      return "w-[84px]";
+    case 1:
+      return "w-12";
+    case 2:
+      return "w-10";
+    default:
+      return "w-10";
+  }
+};
+const getRankingIcon = (index) => {
+  switch (index) {
+    case 0:
+      return "rank/nads.png";
+    case 1:
+      return "rank/gold.png";
+    case 2:
+      return "rank/silver.png";
+    default:
+      return "rank/bronze.png";
+  }
+};
+
+const DialogPostcard = ({ data, onClose }) => {
   //   const [images, setImages] = useState([]);
   //   const [isLoading, setIsLoading] = useState(false);
   const { exportedURL, exportRefCallback } = useImageExporter();
-
-  const data = {
-    total: 100,
-    rank: 100,
-    displayName: "h3x",
-    avatarUrl:
-      "https://firebasestorage.googleapis.com/v0/b/thainads-speed-dating.appspot.com/o/avatars%2F0xh3x.webp?alt=media&token=84552c64-c3b1-4717-9654-a15eeedfdf42&v=" +
-      new Date().getTime(),
-  };
 
   return (
     <Dialog
@@ -136,6 +152,26 @@ const DialogPostcard = ({ onClose }) => {
                 >
                   {data.rank}
                 </h1>
+                {/* <div className="relative w-[100px] flex justify-center items-center mt-4">
+                  <img
+                    src={getRankingIcon(data.rank - 1)}
+                    alt="bronze"
+                    className={`z-[1] ${getRankingIconSize(data.rank - 1)}`}
+                  />
+                  <span
+                    className={`absolute text-[24px] text-white font-bold z-[2]`}
+                    style={{
+                      top: "50%",
+                      left: "50%",
+                      transform:
+                        data.rank - 1 < 3
+                          ? "translate(-50%, -60%)"
+                          : "translate(-50%, -50%)",
+                    }}
+                  >
+                    {data.rank}
+                  </span>
+                </div> */}
               </div>
             </div>
             <div
@@ -196,11 +232,11 @@ const DialogPostcard = ({ onClose }) => {
                   gap: "10px",
                 }}
               >
-                {[...new Array(30)].map((_, index) => (
+                {data.connections.map((user, index) => (
                   <img
                     key={index}
-                    src={data.avatarUrl}
-                    alt="Avatar"
+                    src={user.avatarUrl}
+                    alt={user.displayName}
                     className="w-[38px] h-[38px] rounded-full"
                     //   referrerPolicy="no-referrer"
                     //   crossOrigin="anonymous"
