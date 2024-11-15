@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "../components/core/Container";
 import Button from "../components/core/Button";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useSnackbar } from "notistack";
+import { getDatabase, onValue, ref, set } from "firebase/database";
 
 export default function GuestEntryPage({ onProfileSubmit }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -10,6 +11,8 @@ export default function GuestEntryPage({ onProfileSubmit }) {
   const [displayName, setDisplayName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [isGuestRegistrationEnabled, setIsGuestRegistrationEnabled] =
+    useState(false);
 
   const placeholderImage = "https://via.placeholder.com/150"; // Replace with your placeholder URL
 
@@ -41,66 +44,99 @@ export default function GuestEntryPage({ onProfileSubmit }) {
     await onProfileSubmit({ displayName, profilePicture });
   };
 
+  useEffect(() => {
+    const fetchGuestRegistrationStatus = async () => {
+      const db = getDatabase();
+      const guestRegistrationRef = ref(db, "config/guestRegistrationEnabled");
+
+      const unsubscribe = onValue(guestRegistrationRef, (snapshot) => {
+        const data = snapshot.val();
+        setIsGuestRegistrationEnabled(data);
+      });
+
+      return unsubscribe;
+    };
+
+    const unsubscribe = fetchGuestRegistrationStatus();
+
+    return () => unsubscribe;
+  }, []);
+
   return (
     <Container>
-      <h1 className="text-2xl font-bold text-center mb-4">Join as a Guest</h1>
+      {isGuestRegistrationEnabled ? (
+        <>
+          <h1 className="text-2xl font-bold text-center mb-4">
+            Join as a Guest
+          </h1>
 
-      <div className="flex flex-col items-center mb-4">
-        {/* Profile Picture Section */}
-        <div className="relative w-48 h-48">
-          <img
-            src={preview || placeholderImage}
-            alt="Profile preview"
-            className="w-48 h-48 rounded-full object-cover shadow-md"
-          />
-          <label
-            htmlFor="profilePicture"
-            className="absolute bottom-1 right-1 rounded-full cursor-pointer p-2 bg-gray-500 hover:bg-gray-600"
-          >
-            <CameraAltIcon className="text-white" />
+          <div className="flex flex-col items-center mb-4">
+            {/* Profile Picture Section */}
+            <div className="relative w-48 h-48">
+              <img
+                src={preview || placeholderImage}
+                alt="Profile preview"
+                className="w-48 h-48 rounded-full object-cover shadow-md"
+              />
+              <label
+                htmlFor="profilePicture"
+                className="absolute bottom-1 right-1 rounded-full cursor-pointer p-2 bg-gray-500 hover:bg-gray-600"
+              >
+                <CameraAltIcon className="text-white" />
+                <input
+                  type="file"
+                  id="profilePicture"
+                  accept="image/*"
+                  onChange={handleProfilePictureChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="displayName"
+              className="block text-gray-700 font-semibold mb-2"
+            >
+              Display Name
+            </label>
             <input
-              type="file"
-              id="profilePicture"
-              accept="image/*"
-              onChange={handleProfilePictureChange}
-              className="hidden"
+              type="text"
+              id="displayName"
+              value={displayName}
+              onChange={handleNameChange}
+              onBlur={handleFormatName}
+              className="w-full border-gray-300 rounded-md p-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Enter your name"
+              required
             />
-          </label>
+            <span className="mt-1 text-xs text-gray-500 block">
+              Name should be less than 20 characters.
+            </span>
+          </div>
+
+          <Button
+            sx={{
+              mt: 2,
+            }}
+            variant="contained"
+            size="large"
+            onClick={handleSubmit}
+          >
+            Continue
+          </Button>
+        </>
+      ) : (
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            Guest Registration Disabled
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Sorry, guest registration has been disabled by the host.
+          </p>
         </div>
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="displayName"
-          className="block text-gray-700 font-semibold mb-2"
-        >
-          Display Name
-        </label>
-        <input
-          type="text"
-          id="displayName"
-          value={displayName}
-          onChange={handleNameChange}
-          onBlur={handleFormatName}
-          className="w-full border-gray-300 rounded-md p-2 focus:ring-purple-500 focus:border-purple-500"
-          placeholder="Enter your name"
-          required
-        />
-        <span className="mt-1 text-xs text-gray-500 block">
-          Name should be less than 20 characters.
-        </span>
-      </div>
-
-      <Button
-        sx={{
-          mt: 2,
-        }}
-        variant="contained"
-        size="large"
-        onClick={handleSubmit}
-      >
-        Continue
-      </Button>
+      )}
     </Container>
   );
 }

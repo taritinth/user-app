@@ -24,9 +24,45 @@ function Mockup() {
   const [isConnectionEnabled, setIsConnectionEnabled] = useState(false); // State to hold connection status
   const [isAvailableToDownloadPostcard, setIsAvailableToDownloadPostcard] =
     useState(false);
+  const [isGuestRegistrationEnabled, setIsGuestRegistrationEnabled] =
+    useState(false);
 
   const [guestStart, setGuestStart] = useState(1);
   const [guestEnd, setGuestEnd] = useState(96);
+
+  const toggleGuestRegistration = async () => {
+    try {
+      setIsLoading(true);
+      const guestRegistrationRef = ref(db, "config/guestRegistrationEnabled");
+      await set(guestRegistrationRef, !isGuestRegistrationEnabled);
+      setIsGuestRegistrationEnabled(!isGuestRegistrationEnabled);
+      enqueueSnackbar(
+        `Guest registration ${
+          !isGuestRegistrationEnabled ? "enabled" : "disabled"
+        }.`,
+        {
+          variant: "success",
+        }
+      );
+    } catch (error) {
+      console.error("Error toggling guest registration status: ", error);
+      enqueueSnackbar("Error toggling guest registration status.", {
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchGuestRegistrationStatus = async () => {
+      const guestRegistrationRef = ref(db, "config/guestRegistrationEnabled");
+      const guestRegistrationSnapshot = await get(guestRegistrationRef);
+      setIsGuestRegistrationEnabled(guestRegistrationSnapshot.val());
+    };
+
+    fetchGuestRegistrationStatus();
+  }, []);
 
   // Fetch connection status when component mounts
   useEffect(() => {
@@ -389,6 +425,16 @@ function Mockup() {
             />
           }
           label="Available to Download Postcard"
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isGuestRegistrationEnabled}
+              onChange={toggleGuestRegistration}
+              disabled={isLoading}
+            />
+          }
+          label="Enable Guest Registration"
         />
         <Button
           variant="contained"
