@@ -38,6 +38,43 @@ const StyledBox = styled("div")(({ theme }) => ({
 }));
 
 //
+const getRankingIconSize = (index) => {
+  switch (index) {
+    case 0:
+      return "w-14";
+    case 1:
+      return "w-12";
+    case 2:
+      return "w-10";
+    default:
+      return "w-10";
+  }
+};
+const getRankingIcon = (index) => {
+  switch (index) {
+    case 0:
+      return "rank/nads.png";
+    case 1:
+      return "rank/gold.png";
+    case 2:
+      return "rank/silver.png";
+    default:
+      return "rank/bronze.png";
+  }
+};
+
+const getRankingTextSize = (length) => {
+  switch (length) {
+    case 1:
+      return "text-[24px]";
+    case 2:
+      return "text-[20px]";
+    case 3:
+      return "text-[14px]";
+    default:
+      return "text-lg";
+  }
+};
 
 const Profile = (props) => {
   const { user } = useAuth();
@@ -277,10 +314,34 @@ const Profile = (props) => {
             alt="Profile"
             className="w-48 h-48 rounded-full shadow-lg"
           />
-          {rank > 0 && (
+          {/* {rank > 0 && (
             <span className="absolute bottom-1 right-1 h-8 w-10 font-bold border-2 border-gray-300 rounded-full p-2 flex justify-center items-center bg-white">
               {rank}
             </span>
+          )} */}
+          {rank > 0 && (
+            <div className="absolute bottom-0 right-0 w-[56px] flex justify-center items-center mr-2 shrink-0">
+              <img
+                src={getRankingIcon(rank - 1)}
+                alt="bronze"
+                className={`z-[1] ${getRankingIconSize(rank - 1)}`}
+              />
+              <span
+                className={`absolute text-white font-bold z-[2] ${getRankingTextSize(
+                  String(rank).length
+                )}`}
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  transform:
+                    rank - 1 < 3
+                      ? "translate(-50%, -60%)"
+                      : "translate(-50%, -50%)",
+                }}
+              >
+                {rank}
+              </span>
+            </div>
           )}
         </div>
 
