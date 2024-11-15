@@ -1,4 +1,4 @@
-import { ref, set, push, get, update } from "firebase/database";
+import { ref, set, push, get, update, onValue } from "firebase/database";
 import { db, storage } from "../firebase";
 import { encodeUsername } from "../utils";
 import {
@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { useDialog } from "../context/DialogContext";
 import { Red } from "../styles/color";
+import DialogPostcard from "./DialogPostcard";
 
 function Mockup() {
   const { openDialog, closeDialog } = useDialog();
@@ -29,6 +30,35 @@ function Mockup() {
 
   const [guestStart, setGuestStart] = useState(1);
   const [guestEnd, setGuestEnd] = useState(96);
+
+  const [users, setUsers] = useState({});
+
+  function getUsers() {
+    const usersRef = ref(db, "users");
+    onValue(usersRef, (snapshot) => {
+      const users = snapshot.val() || {};
+      setUsers(users);
+    });
+  }
+
+  const sortedUsersByRanking = Object.values(users)
+    .filter((user) => Object.keys(user?.connections || {}).length > 0)
+    .sort((a, b) => {
+      // Sort by number of connections (descending)
+      const connectionDiff =
+        Object.keys(b.connections).length - Object.keys(a.connections).length;
+
+      if (connectionDiff !== 0) {
+        return connectionDiff;
+      }
+
+      // If number of connections is the same, sort by last active (ascending)
+      return a.lastActive - b.lastActive;
+    });
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   const toggleGuestRegistration = async () => {
     try {
@@ -530,6 +560,65 @@ function Mockup() {
           Clear Connections
         </Button>
       </Stack>
+      <h4>Postcard Printing </h4>
+      <div className="flex flex-col h-500px overflow-y-auto">
+        {sortedUsersByRanking.map((user, index) => (
+          <div className="flex mb-6" key={user.username}>
+            <span>{index + 1}</span>
+            <img
+              src={user.avatarUrl}
+              alt={user.displayName}
+              style={{ width: 50, height: 50, borderRadius: "50%" }}
+            />
+            <span>{user.displayName}</span>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const sortedConnectionsByTimestamp = Object.entries(
+                  user.connections
+                ).sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+                console.log("Here", sortedConnectionsByTimestamp);
+
+                const data = {
+                  total: Object.keys(user.connections).length,
+                  rank: index + 1,
+                  displayName: user.displayName,
+                  avatarUrl: `${user.avatarUrl}&v=${new Date().getTime()}`,
+                  // connections: connections.map((connection) => ({
+                  //   displayName: connection.displayName,
+                  //   avatarUrl: `${
+                  //     connection.avatarUrl
+                  //   }&v=${new Date().getTime()}`,
+                  // })),
+                  connections: sortedConnectionsByTimestamp.map(
+                    ([username]) => ({
+                      displayName: users[username]?.displayName,
+                      avatarUrl: `${
+                        users[username]?.avatarUrl
+                      }&v=${new Date().getTime()}`,
+                    })
+                  ),
+                };
+
+                openDialog({
+                  type: "custom",
+                  customDialog: (
+                    <DialogPostcard
+                      data={data}
+                      onClose={() => {
+                        closeDialog();
+                      }}
+                    />
+                  ),
+                });
+              }}
+            >
+              Print
+            </Button>
+          </div>
+        ))}
+      </div>
     </Container>
   );
 }
