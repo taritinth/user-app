@@ -118,16 +118,21 @@ const Profile = (props) => {
 
       // Close QR Scanner & Open confirmation dialog
       if (userData) {
-        toggleDrawer(false)();
         if (!userData.displayName || !userData.avatarUrl) {
+          setIsNotFound(true);
           openDialog({
             type: "error",
             title: "User data incomplete",
-            content: `Please ask ${userData?.displayName} to update their profile.`,
+            content: `Please ask ${userData?.username} to update their profile.`,
+            onClose: () => {
+              setIsNotFound(false);
+              closeDialog();
+            },
           });
           return;
         }
 
+        toggleDrawer(false)();
         openDialog({
           type: "confirm",
           title: `Would you like to connect with ${userData.displayName}?`,
