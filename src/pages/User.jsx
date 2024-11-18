@@ -130,7 +130,7 @@ const User = () => {
         (user ? (
           !user.displayName ? (
             <GuestEntryPage onProfileSubmit={handleSaveProfile} />
-          ) : isConnectionEnabled ? (
+          ) : (
             <div className="flex flex-col items-center">
               <img
                 src={user?.avatarUrl}
@@ -163,26 +163,10 @@ const User = () => {
                 Let&apos;s Go!
               </Button>
               {/* <h1>{user.displayName}</h1>
-            <Button variant="contained" onClick={handleSignIn}>
-              Join
-            </Button> */}
+        <Button variant="contained" onClick={handleSignIn}>
+          Join
+        </Button> */}
             </div>
-          ) : (
-            <>
-              <img
-                src={user?.avatarUrl}
-                alt="User Profile Picture"
-                className="w-48 h-48 rounded-full mb-6"
-              />
-
-              <h1 className="text-center text-2xl font-bold text-gray-800 mb-2">
-                👋 Welcome, {user?.displayName}!
-              </h1>
-              <div className="text-center">
-                Sorry, the activity hasn&apos;t started yet. Please wait for the
-                host to kick things off.
-              </div>
-            </>
           )
         ) : (
           <div className="text-center">

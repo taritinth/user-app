@@ -561,7 +561,7 @@ function Mockup() {
         </Button>
       </Stack>
       <h4>Postcard Printing </h4>
-      <div className="flex flex-col h-500px overflow-y-auto">
+      <div className="flex flex-col h-1500px overflow-y-auto">
         {sortedUsersByRanking.map((user, index) => (
           <div className="flex mb-6" key={user.username}>
             <span>{index + 1}</span>
