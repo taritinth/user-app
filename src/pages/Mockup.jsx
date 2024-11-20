@@ -570,7 +570,11 @@ function Mockup() {
               alt={user.displayName}
               style={{ width: 50, height: 50, borderRadius: "50%" }}
             />
-            <span>{user.displayName}</span>
+            <div className="flex flex-col">
+              <span>{user.displayName}</span>
+              <span>{user.username}</span>
+              <span>{Object.keys(user.connections).length}</span>
+            </div>
             <Button
               variant="contained"
               onClick={() => {
